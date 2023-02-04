@@ -9,10 +9,12 @@ export const MULTI_DATES_FIRST = 'First';
 export const MULTI_DATES_LAST = 'Last';
 
 export const cleanDecimalString = value => {
-    const decimalsString = value.toString().replace(/^[0-9]+\./, '');
+    const decimalsString = value.toString().replace(/^-?[0-9]+\./, '');
     const significantAmountDecimals = Math.min(
-        (decimalsString.replace(/^(0*[1-9][0-9]*[^0])0{5,}[1-9]{0,4}$/, "$1")).length, // trim trailing "0"
-        (decimalsString.replace(/^(0*[1-9][0-9]*[^9])9{5,}[0-8]{0,4}$/, "$1")).length, // trim trailing "9"
+        (decimalsString.replace(/^(0*[1-9][0-9]*[^0])0{5,}[0-9]{0,4}$/, "$1")).length, // trim trailing "0"
+        (decimalsString.replace(/^(0*[1-9][0-9]*[^9])9{5,}[0-9]{0,4}$/, "$1")).length, // trim trailing "9"
+        (decimalsString.replace(/^(0*[1-9][0-9]*[^3]33)3{5,}[0-9]{0,4}$/, "$1")).length, // trim trailing "9"
+        (decimalsString.replace(/^(0*[1-9][0-9]*[^6]66)6{5,}[0-9]{0,4}$/, "$1")).length, // trim trailing "9"
         decimalsString.length,
     );
     return value.toFixed(significantAmountDecimals);

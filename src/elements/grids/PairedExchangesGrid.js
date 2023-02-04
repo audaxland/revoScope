@@ -82,7 +82,7 @@ const PairedExchangesGrid = () => {
         {field: 'Fee_1', hide: true},
         {
             field: 'files_1',
-            valueGetter: ({data}) => data.files_1.map(id => fileMap[id] ?? '').join(','),
+            valueGetter: ({data}) => data.files_1.map(id => fileMap[id] ?? '').join('|'),
             hide: true,
         },
         {field: 'Currency_2'},
@@ -91,7 +91,7 @@ const PairedExchangesGrid = () => {
         {field: 'Fee_2', hide: true},
         {
             field: 'files_2',
-            valueGetter: ({data}) => data.files_2.map(id => fileMap[id] ?? '').join(','),
+            valueGetter: ({data}) => data.files_2.map(id => fileMap[id] ?? '').join('|'),
             hide: true,
         },
     ], [fileMap]);
@@ -105,6 +105,7 @@ const PairedExchangesGrid = () => {
         <GridWithControl {...{
             rowData: pairRows,
             columnDefs,
+            gridName: 'ExchangePairs'
         }} />
     );
 }

@@ -21,7 +21,7 @@ const OverviewPage = () => {
             <TitledBox title="How it works">
                 <p>Before you can use this app, you must download your revolut statements form you revolut account.</p>
                 <div>
-                    To do so, you must:
+                    To use the app, you must:
                     <ul>
                         <BulletLi>
                             Go to <a href="https://www.revolut.com/" target='_blank' className="text-blue-800" rel="noreferrer" >
@@ -33,7 +33,7 @@ const OverviewPage = () => {
                         <BulletLi>
                             Generate a statement on that account using the "Excel" (actually csv) format and make sure
                             the date range selected includes the entire period since your first purchase of crypto assets
-                            (that will probably include severa years)
+                            (that will probably include several years)
                         </BulletLi>
                         <BulletLi>
                             Go on each crypto account you have and generate a "Excel" (actually csv) statement

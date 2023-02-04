@@ -1,13 +1,15 @@
 import {AgGridReact} from "ag-grid-react";
 import {resizeGrid} from "./gridHelper";
 import GridControlBar from "./GridControlBar";
-import {useRef, useState} from "react";
+import {useCallback, useMemo, useRef, useState} from "react";
+import md5 from "md5";
 
 const GridWithControl = ({
      preGrid = null,
      gridRef = undefined,
      rowData,
      columnDefs,
+     gridReady,
     ...rest
  }) => {
     const localRef = useRef();
@@ -18,6 +20,18 @@ const GridWithControl = ({
         sortable: true,
         resizable: true,
     });
+
+    const columnsHash = useMemo(() => md5(columnDefs.map(col => col.field).join('|')), [columnDefs])
+
+    const onGridReady = useCallback(grid => {
+        if (gridReady) gridReady(grid)
+        const storedSettings = sessionStorage.getItem('girdColumns_' + columnsHash)
+        if (storedSettings) {
+            Object.entries(JSON.parse(storedSettings)).forEach(([colId, isVisible]) => {
+                grid.columnApi.setColumnVisible(colId, isVisible);
+            })
+        }
+    }, [columnsHash])
 
     return (
         <div className="flex flex-row">
@@ -38,6 +52,8 @@ const GridWithControl = ({
                         defaultColDef={defaultColDef}
                         enableCellTextSelection={true}
                         onFirstDataRendered={({columnApi}) => resizeGrid(columnApi)}
+                        columnsHash={columnsHash}
+                        onGridReady={onGridReady}
                         {...rest}
                     />
                 </div>

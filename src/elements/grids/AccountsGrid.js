@@ -1,6 +1,7 @@
 import {useFileContext} from "../../store/FilesContext";
 import GridWithControl from "./parts/GridWithControl";
 import {useCallback, useEffect, useMemo, useState} from "react";
+import {cleanDecimal} from "./parts/gridHelper";
 
 const AccountsGrid = () => {
     const {accounts} = useFileContext();
@@ -26,9 +27,9 @@ const AccountsGrid = () => {
         {field: 'purchases', filter: 'agNumberColumnFilter'},
         {field: 'sales', filter: 'agNumberColumnFilter'},
         {field: 'salesInvalid', filter: 'agNumberColumnFilter', hide: true},
-        {field: 'purchased', filter: 'agNumberColumnFilter'},
+        {field: 'purchased', filter: 'agNumberColumnFilter', valueGetter: cleanDecimal('purchased')},
         {field: 'purchasedFor', filter: 'agNumberColumnFilter'},
-        {field: 'sold', filter: 'agNumberColumnFilter'},
+        {field: 'sold', filter: 'agNumberColumnFilter', valueGetter: cleanDecimal('sold')},
         {field: 'soldFor', filter: 'agNumberColumnFilter'},
         {field: 'soldInvalid', filter: 'agNumberColumnFilter', hide: true},
         {field: 'soldInvalidFor', filter: 'agNumberColumnFilter', hide: true},
@@ -54,7 +55,8 @@ const AccountsGrid = () => {
         <GridWithControl {...{
             rowData,
             columnDefs,
-            getRowStyle
+            getRowStyle,
+            gridName: 'Accounts'
         }} />
     );
 }

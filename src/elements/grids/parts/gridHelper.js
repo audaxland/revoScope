@@ -1,3 +1,5 @@
+import {cleanDecimalString} from "../../../lib/formatHelper";
+
 export const resizeGrid = columnApi => {
     setTimeout(() => {
         if (!columnApi) {
@@ -6,3 +8,5 @@ export const resizeGrid = columnApi => {
         columnApi.autoSizeAllColumns();
     }, 5);
 }
+
+export const cleanDecimal = field => ({data}) => cleanDecimalString(data[field])

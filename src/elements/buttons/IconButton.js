@@ -1,17 +1,14 @@
 const IconButton = ({
                         children,
                         onClick,
-                        color = 'gray-500',
-                        hoverColor = 'pink-600',
-                        hoverBg = "gray-100",
                         className = ''
 }) => {
     return (
         <button
             onClick={onClick}
             className={
-                `rounded-full h-7 w-7 flex items-center justify-center relative transition duration-300 hover:-top-0.5
-                text-${color} hover:text-${hoverColor} hover:bg-${hoverBg} hover:shadow-lg hover:shadow-${hoverColor}
+                `rounded-full h-8 w-8 flex items-center justify-center relative transition duration-300 text-lg 
+                hover:-top-0.5 hover:text-pink-600 hover:bg-gray-100 hover:shadow-lg hover:shadow-text-pink-600
                 ${className}`
             }
         >

@@ -135,9 +135,9 @@ export const formatTaxPart = ({
     }))
 }
 
-export const exportTaxDataCsv = ({taxData, taxYear}) => {
+export const exportTaxDataCsv = ({taxData, taxYear, filename}) => {
     exportCsvFile({
         exportData: [...taxData.partI, ...taxData.partII],
-        filename: 'RevoGainExport_' + taxYear + '_' + (moment().format('YYYY-MM-DD_HH-mm-ss')) + '.csv',
+        filename: filename ?? 'RevoGainExport_' + taxYear + '_' + (moment().format('YYYY-MM-DD_HH-mm-ss')) + '.csv',
     });
 }

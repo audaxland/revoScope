@@ -34,7 +34,7 @@ const RecordsGrid = () => {
             field: 'Balance',
             filter: 'agNumberColumnFilter',
         },
-        {field: 'files', valueGetter: ({data}) => data.files.map(id => fileMap[id] ?? '').join(',') },
+        {field: 'files', valueGetter: ({data}) => data.files.map(id => fileMap[id] ?? '').join('|') },
         {field: 'Started Date', hide: true },
         {field: 'Completed Date', hide: true },
         {field: 'Description', hide: true },
@@ -52,6 +52,7 @@ const RecordsGrid = () => {
         <GridWithControl {...{
             rowData: records,
             columnDefs,
+            gridName: 'Records',
         }} />
     );
 }

@@ -1,22 +1,26 @@
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faClose, faGear} from "@fortawesome/free-solid-svg-icons";
+import {faClose, faDownload, faGear} from "@fortawesome/free-solid-svg-icons";
 import {useState} from "react";
-import GirdColumnControl from "./GirdColumnControl";
+import GridColumnControl from "./GridColumnControl";
 import IconButton from "../../buttons/IconButton";
+import GridDownloadControl from "./GridDownloadControl";
 
 const GridControlBar = ({gridRef}) => {
     const [drawer, setDrawer] = useState(null);
     return (
         <div
-            className="relative bg-blue-gray-700 flex flex-col text-white px-1 py-3 w-9 items-center"
+            className="relative bg-blue-gray-700 flex flex-col gap-3 text-white px-1 py-3 w-9 items-center"
         >
-           <div
-            className="text-xl hover:text-pink-500 rounded-full hover:bg-gray-100 w-7 h-7 flex items-center
-            justify-center"
-            onClick={() => setDrawer(old => old ? null : (<GirdColumnControl columnApi={gridRef.current.columnApi ?? null}/>))}
-           >
+            <IconButton
+                onClick={() => setDrawer(old => old ? null : (<GridColumnControl gridRef={gridRef} />))}
+            >
                <FontAwesomeIcon icon={faGear} />
-           </div>
+           </IconButton>
+            <IconButton
+                onClick={() => setDrawer(old => old ? null : (<GridDownloadControl gridRef={gridRef} />))}
+            >
+                <FontAwesomeIcon icon={faDownload} />
+            </IconButton>
             {drawer && (
                 <div className='absolute top-0 right-9 bottom-0 w-screen flex flex-row'>
                     <div
@@ -25,7 +29,7 @@ const GridControlBar = ({gridRef}) => {
                     />
                     <div
                         className=" w-60 bg-gradient-to-r from-blue-gray-200 to-blue-gray-100 h-full top-0 right-9
-                    px-3 py-5 border-l-2 border-gray-500 text-gray-800"
+                    px-3 py-5 border-l-2 border-gray-500 text-gray-800 overflow-y-auto"
                     >
                         <div className="absolute">
                             <IconButton

@@ -1,6 +1,8 @@
 import GridWithControl from "./parts/GridWithControl";
 import {useCallback, useEffect, useMemo, useState} from "react";
 import {useFileContext} from "../../store/FilesContext";
+import {cleanDecimal} from "./parts/gridHelper";
+
 
 const TransactionsGrid = () => {
     const {accounts} = useFileContext();
@@ -22,20 +24,20 @@ const TransactionsGrid = () => {
         {field: 'month', filter: 'agNumberColumnFilter', hide: true},
         {field: 'dateTime'},
         {field: 'currency'},
-        {field: 'purchased', filter: 'agNumberColumnFilter' },
-        {field: 'sold', filter: 'agNumberColumnFilter' },
+        {field: 'purchased', filter: 'agNumberColumnFilter', valueGetter: cleanDecimal('purchased') },
+        {field: 'sold', filter: 'agNumberColumnFilter', valueGetter: cleanDecimal('sold') },
         {field: 'cryptoAmount', filter: 'agNumberColumnFilter', hide: true},
         {field: 'localAmount', filter: 'agNumberColumnFilter' },
         {field: 'localCurrency', hide: true},
         {field: 'cryptoBalance', filter: 'agNumberColumnFilter' },
-        {field: 'balanceToDate', filter: 'agNumberColumnFilter', hide: true},
+        {field: 'balanceToDate', filter: 'agNumberColumnFilter', hide: true, valueGetter: cleanDecimal('balanceToDate')},
         {field: 'balanceValue', filter: 'agNumberColumnFilter' },
         {field: 'gain', filter: 'agNumberColumnFilter', valueGetter: ({data}) => data.gain.toFixed(2)},
 
         {field: 'type', hide: true},
 
-        {field: 'rateToLocal', filter: 'agNumberColumnFilter', hide: true},
-        {field: 'rateToCrypto', filter: 'agNumberColumnFilter', hide: true},
+        {field: 'rateToLocal', filter: 'agNumberColumnFilter', hide: true, valueGetter: cleanDecimal('rateToLocal')},
+        {field: 'rateToCrypto', filter: 'agNumberColumnFilter', hide: true, valueGetter: cleanDecimal('rateToCrypto')},
         {field: 'cost', filter: 'agNumberColumnFilter' , hide: true},
         {field: 'purchaseFeeValue', filter: 'agNumberColumnFilter' , hide: true},
         {field: 'saleFeeValue', filter: 'agNumberColumnFilter' , hide: true},
@@ -53,6 +55,7 @@ const TransactionsGrid = () => {
             rowData,
             columnDefs,
             getRowStyle,
+            gridName: 'Transactions',
         }} />
     );
 }

@@ -37,7 +37,7 @@ const OrphanExchangesGrid = () => {
             filter: 'agNumberColumnFilter',
         },
         {field: 'Description' },
-        {field: 'files', valueGetter: ({data}) => data.files.map(id => fileMap[id] ?? '').join(',') },
+        {field: 'files', valueGetter: ({data}) => data.files.map(id => fileMap[id] ?? '').join('|') },
         {
             field: 'Fee',
             filter: 'agNumberColumnFilter',
@@ -99,6 +99,7 @@ const OrphanExchangesGrid = () => {
                 columnDefs,
                 rowSelection: 'multiple',
                 onRowSelected,
+                gridName: 'OrphanExchanges',
             }}
             preGrid={(
                 <div className='p-3'>

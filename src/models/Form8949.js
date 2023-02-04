@@ -152,10 +152,18 @@ class Form8949
     async downloadFormPdf ({page = 1, part = 'all'}) {
         const offset = (page - 1) * 14;
         const taxDoc = await this.generateTaxFormPdfDoc({offset});
-        if (part === 'I') taxDoc.removePage(1);
-        if (part === 'II') taxDoc.removePage(0);
+        let partName = '';
+        if (part === 'I') {
+            taxDoc.removePage(1);
+            partName = 'partI_';
+        }
+        if (part === 'II') {
+            taxDoc.removePage(0);
+            partName = 'partII_';
+        }
 
-        await this.downloadPdf(taxDoc);
+        const filename = 'RevoForm8949_' + this.year + '_' + partName + page + '_' + (moment().format('YYYY-MM-DD_HH-mm-ss')) + '.pdf';
+        await this.downloadPdf(taxDoc, filename);
     }
 }
 

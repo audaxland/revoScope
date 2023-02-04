@@ -1,22 +1,25 @@
 import {useEffect, useMemo, useState} from "react";
 import {resizeGrid} from "./gridHelper";
 
-const GirdColumnControl = ({columnApi}) => {
+const GridColumnControl = ({gridRef}) => {
+    const columnApi = gridRef?.current?.columnApi ?? null;
+    const columnsHash = gridRef?.current?.props?.columnsHash ?? null;
     const [columnsVisible, setColumnsVisible] = useState({});
-
-    const columns = useMemo(() => columnApi.getAllGridColumns(), [columnApi]);
+    const columns = useMemo(() => columnApi?.getAllGridColumns() ?? [], [columnApi]);
 
     useEffect(() => {
+        if (!columns.length) return;
         setColumnsVisible(columns.reduce((prev, curr) => {
             prev[curr.getColId()] = curr.isVisible();
             return prev;
         }, {}));
     }, [columns]);
 
-
     const toggleVisible = colId => e => {
         columnApi.setColumnVisible(colId, e.target.checked)
-        setColumnsVisible(old => ({...old, [colId]: e.target.checked}));
+        const newColumnsVisible = ({...columnsVisible, [colId]: e.target.checked});
+        setColumnsVisible(newColumnsVisible);
+        sessionStorage.setItem('girdColumns_' + columnsHash, JSON.stringify(newColumnsVisible));
         resizeGrid(columnApi);
     }
 
@@ -48,4 +51,4 @@ const GirdColumnControl = ({columnApi}) => {
     );
 }
 
-export default GirdColumnControl;
+export default GridColumnControl;

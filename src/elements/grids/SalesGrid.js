@@ -2,6 +2,7 @@ import {useFileContext} from "../../store/FilesContext";
 import GridWithControl from "./parts/GridWithControl";
 import {useCallback, useEffect, useMemo, useState} from "react";
 import DefaultButton from "../buttons/DefaultButton";
+import {cleanDecimal} from "./parts/gridHelper";
 
 const SalesGrid = () => {
     const {accounts} = useFileContext();
@@ -43,7 +44,7 @@ const SalesGrid = () => {
             {field: 'date', rowSpan, cellStyle },
             {field: 'dateTime', rowSpan, cellStyle, hide: true  },
             {field: 'currency', rowSpan, cellStyle },
-            {field: 'sold', rowSpan, cellStyle },
+            {field: 'sold', rowSpan, cellStyle, valueGetter: cleanDecimal('sold') },
             {field: 'soldFor', rowSpan, cellStyle },
             {field: 'localCurrency', rowSpan, cellStyle, hide: true  },
             {field: 'totalCost', rowSpan, cellStyle, valueGetter: ({data}) => data.totalCost?.toFixed(2) },
@@ -52,15 +53,15 @@ const SalesGrid = () => {
             {field: 'saleFeeValue', rowSpan, cellStyle, valueGetter: ({data}) => data.saleFeeValue?.toFixed(2), hide: true  },
             {field: 'gain', rowSpan, cellStyle, valueGetter: ({data}) => data.gain?.toFixed(2) },
             {field: 'cryptoAmount', rowSpan, cellStyle, hide: true  },
-            {field: 'rateToCrypto', rowSpan, cellStyle, hide: true  },
-            {field: 'rateToLocal', rowSpan, cellStyle, hide: true  },
+            {field: 'rateToCrypto', rowSpan, cellStyle, hide: true, valueGetter: cleanDecimal('rateToCrypto')},
+            {field: 'rateToLocal', rowSpan, cellStyle, hide: true, valueGetter: cleanDecimal('rateToLocal')},
             {field: 'type', rowSpan, cellStyle, hide: true  },
             {field: 'purchases', rowSpan, cellStyle },
             {field: 'purchaseDates', valueGetter: ({data}) => data.purchaseDates.join('|'), rowSpan, cellStyle },
         ],
         ...(withPurchases ? [
             {field: 'purchaseItemDateTime'},
-            {field: 'purchaseItemAmount'},
+            {field: 'purchaseItemAmount', valueGetter: cleanDecimal('purchaseItemAmount')},
             {field: 'purchaseItemFor', valueGetter: ({data}) => data.purchaseItemFor?.toFixed(2)},
             {field: 'purchaseItemFeeValue', valueGetter: ({data}) => data.purchaseItemFeeValue?.toFixed(2)},
         ] : [])
@@ -77,6 +78,7 @@ const SalesGrid = () => {
                 columnDefs,
                 getRowStyle,
                 suppressRowTransform: true,
+                gridName: 'Sales',
             }}
 
             preGrid={(
