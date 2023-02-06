@@ -1,4 +1,4 @@
-import {db} from "./db";
+import {db, dbSchema} from "./db";
 import { getRecordByKey} from "./dbRecords";
 
 export const insertFile = (fileDetails, fileData) => {
@@ -31,5 +31,10 @@ export const deleteFile = async fileId => {
             }
         });
         await db.files.delete(fileId);
+
+        // if there are no more files, clear all tables un case some records were left behind
+        if (!(await db.files.count())) {
+            Object.keys(dbSchema).forEach(table => db[table].clear());
+        }
     });
 }

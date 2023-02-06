@@ -2,7 +2,8 @@ class Purchase
 {
     constructor(pair) {
         this.pair = pair;
-        this.purchased = pair.cryptoAmount - pair.cryptoFee; // for purchases, crypto Amount includes the fee
+        // for purchases, crypto Amount includes the fee in older statements, in newer statement the cryptoFee here is 0.0
+        this.purchased = pair.cryptoAmount - pair.cryptoFee;
         this.remaining = this.purchased;
         this.purchaseFeeValue = pair.localFee + (pair.rateToLocal * pair.cryptoFee);
     }

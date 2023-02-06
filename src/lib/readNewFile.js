@@ -59,15 +59,20 @@ export const readNewStatementFile = async newUpload => {
     const statistics = getFileStatistics(csvContent);
 
     const fileData = csvContent.map(row => {
-        const hash = md5(JSON.stringify(row));
-        const {'Completed Date': dontCare, State, ...partialRow} = row;
-        const partialHash = md5(JSON.stringify(partialRow));
+        // the amount is not included in the hash because revolut is not consistent in the way it calculates the amount
+        const hashField = {
+            'Type': row['Type'],
+            'Currency': row['Currency'],
+            'Started Date': row['Started Date'],
+            'Completed Date': row['Completed Date'],
+            'Balance': row['Balance'],
+        };
+        const hash = md5(JSON.stringify(hashField));
         const key = row['Started Date'].replaceAll(/[^0-9]/g, '_') + '_' + hash;
         const date = new Date(row['Started Date']);
         return {
             key,
             hash,
-            partialHash,
             date,
             ...row,
         }

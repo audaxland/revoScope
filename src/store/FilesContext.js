@@ -15,8 +15,7 @@ export const FilesContext = createContext({
 
 export const FilesContextProvider = ({children}) => {
     const {files, fileMap} = useFiles();
-    const referenceCurrency = 'EUR';
-    const {updateExchanges, pairs, orphanExchanges} = useExchanges({referenceCurrency});
+    const {updateExchanges, pairs, orphanExchanges} = useExchanges();
     const {accounts, updateAccounts} = useAccounts();
 
     useEffect(() => {

@@ -32,6 +32,11 @@ const TransactionsGrid = () => {
         {field: 'cryptoBalance', filter: 'agNumberColumnFilter' },
         {field: 'balanceToDate', filter: 'agNumberColumnFilter', hide: true, valueGetter: cleanDecimal('balanceToDate')},
         {field: 'balanceValue', filter: 'agNumberColumnFilter' },
+        {
+            field: 'balanceDelta',
+            filter: 'agNumberColumnFilter',
+            hide: true,
+            valueGetter: ({data}) => Number(Math.abs(Number(data.balanceToDate) - Number(data.cryptoBalance)).toFixed(12).replace(/0+$/, '0'))},
         {field: 'gain', filter: 'agNumberColumnFilter', valueGetter: ({data}) => data.gain.toFixed(2)},
 
         {field: 'type', hide: true},

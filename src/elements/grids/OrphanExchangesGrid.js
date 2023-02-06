@@ -88,9 +88,7 @@ const OrphanExchangesGrid = () => {
         await updateExchanges();
     }
 
-    if ((!orphanRows) || (!Object.keys(fileMap).length)) {
-        return <NoData />;
-    }
+
     return (
         <GridWithControl
             {...{

@@ -16,16 +16,21 @@ class Pair
 
         this.cryptoAmount = Number(cryptoRecord.Amount);
         this.localAmount = Number(localRecord.Amount);
-        this.cryptoFee = Number(cryptoRecord.Fee);
-        this.localFee = Number(localRecord.Fee);
+
+        // in more recent revolut statements, the fee on the cryptocurrency record is actually a currency amount fee
+        // whereas on older statements, that fee was a cryptocurrency amount
+        if (cryptoRecord['Base currency'] === localRecord.Currency) {
+            this.cryptoFee = 0.0;
+            this.localFee = Number(localRecord.Fee) + Number(cryptoRecord.Fee);
+        } else {
+            this.cryptoFee = Number(cryptoRecord.Fee);
+            this.localFee = Number(localRecord.Fee);
+        }
 
         this.cryptoBalance = Number(cryptoRecord.Balance);
 
         this.rateToLocal = Math.abs(this.localAmount / this.cryptoAmount);
         this.rateToCrypto = Math.abs(this.cryptoAmount / this.localAmount);
-
-
-
     }
 
     pairDetails() {

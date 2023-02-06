@@ -42,12 +42,12 @@ const RecordsGrid = () => {
         {field: 'State', hide: true },
         {field: 'id', hide: true },
         {field: 'key', hide: true },
+        {field: 'Fiat amount', hide: true },
+        {field: 'Fiat amount (inc. fees)', hide: true, valueGetter: (row) => row.data['Fiat amount (inc. fees)'] },
+        {field: 'Base currency', hide: true },
     ], [fileMap]);
 
 
-    if ((!records) || (!Object.keys(fileMap).length)) {
-        return <NoData />;
-    }
     return (
         <GridWithControl {...{
             rowData: records,

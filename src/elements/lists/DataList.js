@@ -4,7 +4,7 @@ import ActionCell from "./ActionCell";
 const DataList = ({dataRows, titles, actions}) => {
     return (
         <div
-            className="flex flex-col border border-indigo-400 rounded my-8"
+            className="flex flex-col border border-indigo-400 rounded my-8  min-w-[15em]"
         >
             {dataRows?.map((row, index) => (
                 <div
@@ -12,7 +12,7 @@ const DataList = ({dataRows, titles, actions}) => {
                     className={(index % 2 === 0 ? 'bg-blue-100 ' : 'bg-blue-50 ') + " hover:bg-indigo-200"}
                 >
                     <div
-                        className={"flex md:flex-row flex-col"}
+                        className={"flex lg:flex-row flex-col"}
                     >
                         {(!!titles) && Object.entries(titles).map(([field, title]) => (
                             <DataCell title={title} key={field}>{row[field]}</DataCell>

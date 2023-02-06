@@ -96,10 +96,6 @@ const PairedExchangesGrid = () => {
         },
     ], [fileMap]);
 
-    if (!pairRows.length) {
-        return <NoData />
-    }
-
 
     return (
         <GridWithControl {...{

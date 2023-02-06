@@ -17,8 +17,10 @@ export const processDate = (dateExchanges, referenceCurrency) => {
         currency, count: currencyMap[currency].length
     }));
 
-
-    if ((dateExchanges.length === 2) && (currencyCount.length === 2)) {
+    if ((dateExchanges.length === 2)
+        && (currencyCount.length === 2)
+        && (currencyCount[0].count === currencyCount[1].count)
+        && currencyMap[referenceCurrency]) {
         result.pairs.push(new Pair({
             records: [...dateExchanges],
             matchedBy: 'date-time',
@@ -27,7 +29,7 @@ export const processDate = (dateExchanges, referenceCurrency) => {
         return result;
     }
 
-    if ((dateExchanges.length % 2 === 0) && (currencyCount.length === 2)) {
+    if ((dateExchanges.length % 2 === 0) && (currencyCount.length === 2) && currencyMap[referenceCurrency]) {
         const [firstCurrency, secondCurrency] = Object.values(currencyMap);
         firstCurrency.sort(({Amount: a}, {Amount: b}) => (a > b) ? 1 : ((a < b) ? -1 : 0));
         secondCurrency.sort(({Amount: a}, {Amount: b}) => (a > b) ? 1 : ((a < b) ? -1 : 0));
