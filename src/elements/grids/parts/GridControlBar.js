@@ -1,9 +1,10 @@
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faClose, faDownload, faGear} from "@fortawesome/free-solid-svg-icons";
+import {faArrowsLeftRightToLine, faClose, faDownload, faGear} from "@fortawesome/free-solid-svg-icons";
 import {useState} from "react";
 import GridColumnControl from "./GridColumnControl";
 import IconButton from "../../buttons/IconButton";
 import GridDownloadControl from "./GridDownloadControl";
+import {resizeGrid} from "./gridHelper";
 
 const GridControlBar = ({gridRef}) => {
     const [drawer, setDrawer] = useState(null);
@@ -16,6 +17,11 @@ const GridControlBar = ({gridRef}) => {
             >
                <FontAwesomeIcon icon={faGear} />
            </IconButton>
+            <IconButton
+                onClick={() => (gridRef?.current?.columnApi) && resizeGrid(gridRef.current.columnApi)}
+            >
+                <FontAwesomeIcon icon={faArrowsLeftRightToLine} />
+            </IconButton>
             <IconButton
                 onClick={() => setDrawer(old => old ? null : (<GridDownloadControl gridRef={gridRef} />))}
             >

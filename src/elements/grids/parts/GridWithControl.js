@@ -3,6 +3,7 @@ import {resizeGrid} from "./gridHelper";
 import GridControlBar from "./GridControlBar";
 import {useCallback, useMemo, useRef, useState} from "react";
 import md5 from "md5";
+import styles from './gridStyles.module.css';
 
 const GridWithControl = ({
      preGrid = null,
@@ -16,7 +17,7 @@ const GridWithControl = ({
 
     const [defaultColDef] = useState({
         filter: 'agTextColumnFilter',
-        minWidth: 100,
+        minWidth: 50,
         sortable: true,
         resizable: true,
     });
@@ -31,10 +32,10 @@ const GridWithControl = ({
                 grid.columnApi.setColumnVisible(colId, isVisible);
             })
         }
-    }, [columnsHash])
+    }, [columnsHash, gridReady])
 
     return (
-        <div className="flex flex-row">
+        <div className={`flex flex-row`}>
             <div
                 className="ag-theme-alpine flex-1 flex flex-col"
                 style={{height: 'calc(100vh - 64px)'}}
@@ -44,7 +45,7 @@ const GridWithControl = ({
                         {preGrid}
                     </div>
                 )}
-                <div className="flex-1">
+                <div className={`flex-1 ${styles.gridWrapper}`}>
                     <AgGridReact
                         ref={typeof gridRef === 'undefined' ? localRef : gridRef}
                         rowData={rowData}
@@ -54,6 +55,7 @@ const GridWithControl = ({
                         onFirstDataRendered={({columnApi}) => resizeGrid(columnApi)}
                         columnsHash={columnsHash}
                         onGridReady={onGridReady}
+                        className={styles.grid}
                         {...rest}
                     />
                 </div>

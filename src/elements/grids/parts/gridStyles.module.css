@@ -1,0 +1,11 @@
+.gridWrapper {}
+
+.grid {}
+
+.gridWrapper .grid :global(.ag-header-cell),
+.gridWrapper .grid :global(.ag-cell)
+{
+    padding-left: 0.8em;
+    padding-right: 0.5em;
+}
+
