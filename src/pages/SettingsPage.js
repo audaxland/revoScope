@@ -5,22 +5,59 @@ import {useState} from "react";
 import {Button, Input} from "@material-tailwind/react";
 import {useSettingsContext} from "../store/SettingsContext";
 
+/**
+ * Renders the "Settings" page
+ * @returns {JSX.Element}
+ * @constructor
+ */
 const SettingsPage = () => {
+    /**
+     * referenceCurrency: is your local or base currency you used to buy/sell all your cryptocurrency assets
+     * @type {{referenceCurrency: string, changeReferenceCurrency: function}}
+     */
     const {referenceCurrency, changeReferenceCurrency} = useSettingsContext();
+
+    /**
+     * @type {string[]} list of options to render in the "Currency" dropdown menu
+     */
     const dropdownCurrencies = [...[...Object.keys(taxYearExchangeRates), 'USD'].sort(), 'Other'];
+
+    /**
+     * @type {[string, function]} currency: the currency currently selected in the dropdown menu
+     */
     const [currency, setCurrency] = useState(() => dropdownCurrencies.includes(referenceCurrency) ? referenceCurrency : 'Other');
+
+    /**
+     * @type {[string, function]} otherCurrency: state for the text field to enter a currency when selecting 'Other' in the dropdown
+     */
     const [otherCurrency, setOtherCurrency] = useState('');
+
+    /**
+     * @type {[boolean, function]} changed: tracks if the save button must be enabled or disabled
+     */
     const [changed, setChanged] = useState(false);
 
+    /**
+     * handle the currency dropdown onChange event
+     * @param newCurrency {string} new currency selected
+     */
     const changeCurrency = newCurrency => {
         setCurrency(newCurrency);
         setChanged(true);
     }
+
+    /**
+     * handles the other currency text input onChange event
+     * @param newCurrency {string} currency entered by the user
+     */
     const changeOtherCurrency = newCurrency => {
         setOtherCurrency(newCurrency);
         setChanged(true);
     }
 
+    /**
+     * saves the new currency in the context (and local storage)
+     */
     const saveChanges = () => {
         changeReferenceCurrency((currency === 'Other') ? otherCurrency : currency);
         setChanged(false)

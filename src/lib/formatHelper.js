@@ -1,13 +1,22 @@
+// DATE_FORMAT_* constants used to select the dateformat
 export const DATE_FORMAT_DD_MM_YYYY = 'DD/MM/YYYY';
 export const DATE_FORMAT_MM_DD_YYYY = 'MM/DD/YYYY';
 export const DATE_FORMAT_YYYY_MM_DD = 'YYYY-MM-DD';
 
+// MULTI_DATES_* constants to control how to render multiple dates
+// Form8949 expect the word "VARIOUS" be used instead of the date when there are multiple dates for the purchase date
 export const MULTI_DATES_STATIC = 'Static Text';
 export const MULTI_DATES_ALL = 'All';
 export const MULTI_DATES_FIRST_LAST = 'First and Last';
 export const MULTI_DATES_FIRST = 'First';
 export const MULTI_DATES_LAST = 'Last';
 
+/**
+ * Removes artefact noise decimals introduced by the imprecision of the "flot" type
+ * in short, convert 0.1234560000000000001 to "0.123456"
+ * @param value {Number}
+ * @returns {string}
+ */
 export const cleanDecimalString = value => {
     const decimalsString = value.toString().replace(/^-?[0-9]+\./, '');
     const significantAmountDecimals = Math.min(
@@ -20,6 +29,12 @@ export const cleanDecimalString = value => {
     return value.toFixed(significantAmountDecimals);
 }
 
+/**
+ * Converts dates from the format "YYYY-MM-DD" to the chosen format (DD/MM/YYYY or MM/DD/YYYY)
+ * @param dateString {string} date in the string format "YYYY-MM-DD"
+ * @param format {string} a date format constant
+ * @returns {string}
+ */
 export const formatDateString = (dateString, format) => {
     switch (format) {
         case DATE_FORMAT_DD_MM_YYYY:
@@ -30,6 +45,15 @@ export const formatDateString = (dateString, format) => {
     }
 }
 
+/**
+ * Handles the rendering of multiple dates array into a string
+ * @param dates {string[]} array of dates in the string format "YYYY-MM-DD"
+ * @param datesFormat {string} constant that selects the date format to use (DATE_FORMAT_* constants)
+ * @param format {string} constant that selects how to handle multiple dates (MULTI_DATES_* constants)
+ * @param text {string} optional text replacement for replacing the date by static text (Form8949 uses "VARIOUS" here)
+ * @param separator {string} optional separator to use between the dates when joining multiple dates
+ * @returns {*|string}
+ */
 export const formatMultiDateString = (dates, datesFormat, {format, text, separator}) => {
     if ((!dates) || (dates.length === 0)) return '';
     if (dates.length === 1) return formatDateString(dates[0], datesFormat);
@@ -49,6 +73,12 @@ export const formatMultiDateString = (dates, datesFormat, {format, text, separat
     }
 }
 
+/**
+ * converts negative numbers to string of number between parenthesis
+ * @param value {Number} number to convert
+ * @param toFixed {int} number of decimals to use
+ * @returns {string}
+ */
 export const formatNumberWithParenthesis = (value, toFixed = 2) => {
     if (typeof value === 'undefined' || value === '' || value === null || isNaN(Number(value))) {
         return '';

@@ -18,6 +18,22 @@ import TransactionsPage from "./pages/TransactionsPage";
 import Form8949Page from "./pages/Form8949Page";
 import SettingsPage from "./pages/SettingsPage";
 
+/**
+ * list of routes and their corresponding details
+ * @type {[{
+ *      title: string,
+ *      path: string,
+ *      icon: JSX.Element,
+ *      page: JSX.Element,
+ *      secondary: boolean
+ * }]}
+ *
+ *      title: title of the page, both in the menu and the page header
+ *      path: url used by react-router-dom
+ *      icon: the icon of the page, both in the menu and the header
+ *      page: the component to render for that page
+ *      secondary: if true, displayed smaller in the menu
+ */
 const appRoutes = [
     {
         title: "Overview",
@@ -42,24 +58,21 @@ const appRoutes = [
         path: "records",
         icon: <FontAwesomeIcon icon={faFileInvoiceDollar} />,
         page: <Records />,
+        secondary: true,
     },
     {
         title: "Orphan Exchanges",
         path: "exchanges-orphan",
         icon: <FontAwesomeIcon icon={faLinkSlash} />,
         page: <ExchangesOrphanPage />,
+        secondary: true,
     },
     {
         title: "Exchange Pairs",
         path: "exchanges-pairs",
         icon: <FontAwesomeIcon icon={faArrowsRotate} />,
         page: <ExchangesPairedPage />,
-    },
-    {
-        title: "Transactions",
-        path: "transactions",
-        icon: <FontAwesomeIcon icon={faMoneyBillTransfer} />,
-        page: <TransactionsPage />,
+        secondary: true,
     },
     {
         title: "Accounts",
@@ -68,10 +81,18 @@ const appRoutes = [
         page: <AccountsPage />,
     },
     {
+        title: "Transactions",
+        path: "transactions",
+        icon: <FontAwesomeIcon icon={faMoneyBillTransfer} />,
+        page: <TransactionsPage />,
+        secondary: true,
+    },
+    {
         title: "Sales Gains",
         path: "sales-gains",
         icon: <FontAwesomeIcon icon={faHandHoldingDollar} />,
         page: <GainsPage />,
+        secondary: true,
     },
     {
         title: "Form 8949",
@@ -79,7 +100,6 @@ const appRoutes = [
         icon: <FontAwesomeIcon icon={faBookSkull} />,
         page: <Form8949Page />,
     },
-
 ];
 
 export default appRoutes;

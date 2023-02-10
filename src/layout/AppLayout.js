@@ -2,9 +2,22 @@ import Sidebar from "./Sidebar";
 import {Outlet, useLocation} from "react-router-dom";
 import appRoutes from "../appRoutes";
 
+/**
+ * General Layout of the pages
+ * @returns {JSX.Element}
+ * @constructor
+ */
 const AppLayout = () => {
+    /**
+     * @type {{pathname: string}} current path from the url relative to the domain name
+     */
     const {pathname} = useLocation();
+
+    /**
+     * @type {{title: string, icon: JSX.Element}} title: page title, icon: icon for the page
+     */
     const {title, icon} = appRoutes.find(({path}) => pathname.endsWith(path)) || {};
+
     return (
         <div
             className="flex"

@@ -4,13 +4,20 @@ import { useState} from "react";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faArrowCircleLeft, faBars} from "@fortawesome/free-solid-svg-icons";
 
-
+/**
+ * Renders the sidebar menu
+ * @returns {JSX.Element}
+ * @constructor
+ */
 const Sidebar = () => {
+    /**
+     * @type {[boolean, function]} collapse state of the menu
+     */
     const [collapsed, setCollapsed] = useState(() => (localStorage.getItem('sidebar-collapse') === 'yes'));
 
     const toggleCollapsed = () => {
         setCollapsed(old => {
-            localStorage.setItem('sidebar-collapse', old ? 'no' : 'yes');
+            sessionStorage.setItem('sidebar-collapse', old ? 'no' : 'yes');
             return !old;
         });
     }
@@ -31,12 +38,14 @@ const Sidebar = () => {
                 )}
             </h1>
             <nav className="p-1">
-                {appRoutes.map(({title, path, icon}) => (
+                {appRoutes.map(({title, path, icon, secondary = false}) => (
                     <NavLink
                         className={({isActive}) => (
                             "flex flex-row justify-start items-center text-white px-3 py-2 gap-4 rounded-lg font-bold " +
                             "hover:bg-gradient-to-r from-orange-500 to-pink-600 m-1 hover:shadow-lg hover:shadow-blue-400 " +
-                            (isActive ? 'bg-gradient-to-r ' : '')
+                            (isActive ? 'bg-gradient-to-r ' : '') +
+                            (secondary ? 'text-sm ' : '') +
+                            (secondary && !collapsed ? 'pl-8 py-1 ' : '')
                             )}
                         to={path}
                         key={path}

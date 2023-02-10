@@ -3,11 +3,23 @@ import {useCallback, useEffect, useMemo, useState} from "react";
 import {useFileContext} from "../../store/FilesContext";
 import {cleanDecimal} from "./parts/gridHelper";
 
-
+/**
+ * Renders the "Transactions" grid
+ * @returns {JSX.Element}
+ * @constructor
+ */
 const TransactionsGrid = () => {
+    /**
+     * @type {accounts: Object} list of all Account instances
+     */
     const {accounts} = useFileContext();
+
+    /**
+     * @type {[Object[], function]} rows to render on the grid
+     */
     const [rowData, setRowData] = useState([]);
 
+    // read the transactions from the Account instances and prepare them as an array to render in the grid
     useEffect(() => {
         const newRowData = [];
         Object.keys(accounts).forEach(currency => {
@@ -15,10 +27,11 @@ const TransactionsGrid = () => {
         })
         newRowData.sort((a,b) => a.dateTime > b.dateTime ? 1 : (a.dateTime < b.dateTime ? -1 : 0))
         setRowData(newRowData);
-
     }, [accounts]);
 
-
+    /**
+     * @type {Object[]} definition of the columns of the grid
+     */
     const columnDefs = useMemo(() => [
         {field: 'year', filter: 'agNumberColumnFilter', hide: true},
         {field: 'month', filter: 'agNumberColumnFilter', hide: true},

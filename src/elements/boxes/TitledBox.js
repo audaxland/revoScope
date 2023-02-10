@@ -1,3 +1,10 @@
+/**
+ * Section box with a title
+ * @param title {string}
+ * @param children {JSX.Element|JSX.Element[]}
+ * @returns {JSX.Element}
+ * @constructor
+ */
 const TitledBox = ({title, children}) => {
     return (
         <div className='m-5 p-5 flex flex-col gap-3 bg-white/50 rounded-lg shadow shadow-indigo-900/50'>

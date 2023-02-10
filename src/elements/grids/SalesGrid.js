@@ -4,14 +4,34 @@ import {useCallback, useEffect, useMemo, useState} from "react";
 import DefaultButton from "../buttons/DefaultButton";
 import {cleanDecimal} from "./parts/gridHelper";
 
+/**
+ * Renders the "Sales Gain" grid
+ * @returns {JSX.Element}
+ * @constructor
+ */
 const SalesGrid = () => {
+    /**
+     * @type {{accounts: Object}} list of cryptocurrencies Accounts
+     */
     const {accounts} = useFileContext();
+
+    /**
+     * @type {[Object[], function]} data to display on the grid
+     */
     const [rowData, setRowData] = useState([]);
+
+    /**
+     * @type {[boolean, function]} withPurchases: if true the grid contains both the sales and purchases (one line per purchase)
+     *                                            if false, the grid contains only the sales (one line per sale)
+     */
     const [withPurchases, setWithPurchases] = useState(true);
 
+    // prepare the data to be rendered
     useEffect(() => {
         const newRowData = [];
         Object.values(accounts).forEach(account => {
+            // if withPurchases is true, each row will contain both the sale and one purchase
+            // so there can be multiple rows with the same sale data, as one sale can have multiple purchases
             newRowData.push(...account.listSales(withPurchases));
         });
 
@@ -19,6 +39,9 @@ const SalesGrid = () => {
         setRowData(newRowData);
     }, [accounts, withPurchases]);
 
+    /**
+     * @type {function} getRowStyle: controls the background color of the row depending on the currency of the row
+     */
     const getRowStyle = useCallback(({data}) => {
         const deg = ((data.currency.toUpperCase().charCodeAt(0) - 65) * 12)
             + (data.currency.toUpperCase().charCodeAt(1) - 65)
@@ -26,17 +49,25 @@ const SalesGrid = () => {
         return {background: `hsl(${deg}deg, 100%, 85%)`}
     }, []);
 
+    /**
+     * @type {function} rowSpan: for sale with multiple purchases, the rowspan prevents rendering multiple times the sale
+     */
     const rowSpan = useCallback(
         ({data}) => withPurchases ? (data.purchaseIndex ? 1 : data.purchases) : 1,
         [withPurchases]
     );
 
+    /**
+     * @type {function} cellStyle: for sale with multiple purchases, the rowspan prevents displaying multiple times the sale
+     */
     const cellStyle = useCallback(
         ({data}) => withPurchases && data.purchaseIndex ? {display: 'none'} : {},
         [withPurchases]
     );
 
-
+    /**
+     * @type {Object[]} definition of the columns of the grid
+     */
     const columnDefs = useMemo(() => [
         ...[
             {field: 'id', filter: 'agNumberColumnFilter', rowSpan, cellStyle, hide: true },
@@ -67,10 +98,6 @@ const SalesGrid = () => {
         ] : [])
     ], [withPurchases, rowSpan, cellStyle]);
 
-
-
-
-
     return (
         <GridWithControl
             {...{
@@ -81,6 +108,7 @@ const SalesGrid = () => {
                 gridName: 'Sales',
             }}
 
+            // preGrid is the top section above the grid, with the buttons to toggle the sale with/without the purchases
             preGrid={(
                 <div className='p-3'>
                     <div className='flex flex-row gap-2 items-center'>

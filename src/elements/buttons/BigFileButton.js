@@ -1,3 +1,11 @@
+/**
+ * Lage button that opens file upload prompt to upload files
+ * @param icon {JSX.Element} optional icon to render on the button
+ * @param children {string|JSX.Element} text (or element) to render inside the button
+ * @param onChange {function} callback to call on file upload
+ * @returns {JSX.Element}
+ * @constructor
+ */
 const BigFileButton = ({icon, children, onChange}) => {
     return (
         <div

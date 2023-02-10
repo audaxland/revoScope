@@ -2,12 +2,24 @@ import {useEffect, useMemo, useState} from "react";
 import { useFileContext } from "../../store/FilesContext";
 import GridWithControl from "./parts/GridWithControl";
 import {getAllRecords} from "../../store/dbRecords";
-import NoData from "./parts/NoData";
 
+/**
+ * Renders the "Record" Grid
+ * @returns {JSX.Element}
+ * @constructor
+ */
 const RecordsGrid = () => {
+    /**
+     * @type {{fileMap: Object}} the map of file ids to their corresponding file name
+     */
     const {fileMap} = useFileContext();
+
+    /**
+     * @type {[Object[], function]} records: the list of records to render in the grid
+     */
     const [records, setRecords] = useState([]);
 
+    // read the records from IndexDB
     useEffect(() => {
         (async () => {
             const newRecords = await getAllRecords();
@@ -15,6 +27,9 @@ const RecordsGrid = () => {
         })()
     }, [])
 
+    /**
+     * @type {Object[]} definition of the columns of the grid
+     */
     const columnDefs = useMemo(() => [
         {field: 'Currency'},
         {field: 'Type'},

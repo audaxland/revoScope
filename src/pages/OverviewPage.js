@@ -2,6 +2,11 @@ import TitledBox from "../elements/boxes/TitledBox";
 import BulletLi from "../elements/lists/BulletLi";
 import {Link} from "react-router-dom";
 
+/**
+ * Renders the home page (or "Overview" page)
+ * @returns {JSX.Element}
+ * @constructor
+ */
 const OverviewPage = () => {
     return (
         <div>
@@ -52,7 +57,6 @@ const OverviewPage = () => {
                             and download your tax forms</BulletLi>
                     </ul>
                 </div>
-
             </TitledBox>
         </div>
     );

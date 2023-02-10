@@ -1,5 +1,9 @@
 import {cleanDecimalString} from "../../../lib/formatHelper";
 
+/**
+ * resizeGrid() will cause the automatic resizing of the columns visible on the grid
+ * @param columnApi
+ */
 export const resizeGrid = columnApi => {
     setTimeout(() => {
         if (!columnApi) {
@@ -12,4 +16,11 @@ export const resizeGrid = columnApi => {
     }, 5);
 }
 
+/**
+ * This is a value getter to be used in the gird columns definitions 'valueGetter' setting,
+ * this will convert a float to a string without the unnecessary decimals introduces be the imprecision of the flot type
+ * e.g. replace 0.12346000000000000001 by '0.123456'
+ * @param field
+ * @returns {function({data: *}): *}
+ */
 export const cleanDecimal = field => ({data}) => cleanDecimalString(data[field])

@@ -1,5 +1,14 @@
 import TwoDimensionTable from "./TwoDimensionTable";
 
+/**
+ * Renders the totals summary table on the "Form 8949" page
+ * @param shortTermTotals {Object} data for the short term investments totals
+ * @param longTermTotals {Object} data for the long term investments totals
+ * @param currency {string} name of the currency of the totals
+ * @param rest {Object} additional props to be forwarded to the <TwoDimensionTable /> (mostly styles classes)
+ * @returns {JSX.Element}
+ * @constructor
+ */
 const Form8949TotalsTable = ({shortTermTotals, longTermTotals, currency, ...rest}) => {
 
     const data = {

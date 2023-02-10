@@ -6,8 +6,18 @@ import IconButton from "../../buttons/IconButton";
 import GridDownloadControl from "./GridDownloadControl";
 import {resizeGrid} from "./gridHelper";
 
+/**
+ * Vertical bar on the right of the grid with icons to control the grid, and handle the drawers
+ * @param gridRef {React.MutableRefObject} reference to the gird that is controlled
+ * @returns {JSX.Element}
+ * @constructor
+ */
 const GridControlBar = ({gridRef}) => {
+    /**
+     * @type {JSX.Element|null} drawer: drawer content to render or null is there is no drawer to render
+     */
     const [drawer, setDrawer] = useState(null);
+
     return (
         <div
             className="relative bg-blue-gray-700 flex flex-col gap-3 text-white px-1 py-3 w-9 items-center"
@@ -49,7 +59,6 @@ const GridControlBar = ({gridRef}) => {
                         {drawer}
                     </div>
                 </div>
-
             )}
         </div>
     );

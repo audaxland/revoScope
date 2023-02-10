@@ -2,11 +2,10 @@ import {Button, Input} from "@material-tailwind/react";
 import {useEffect, useState} from "react";
 import {useFileContext} from "../store/FilesContext";
 import {useSettingsContext} from "../store/SettingsContext";
-
 import DropDown from "../elements/inputs/DropDown";
 import TitledBox from "../elements/boxes/TitledBox";
 import FlexWrapSection from "../elements/boxes/FlexWrapSection";
-import {defaultExchangeRate, exportTaxDataCsv, formatTaxData, getSalesTotals} from "../lib/taxesHelper";
+import {defaultExchangeRate, exportTaxDataCsv, formatTaxData, getAllSalesTotals} from "../lib/taxesHelper";
 import Form8949TotalsTable from "../elements/tables/Form8949TotalsTable";
 import {
     DATE_FORMAT_DD_MM_YYYY,
@@ -17,32 +16,99 @@ import {
 import Form8949 from "../models/Form8949";
 import AlertErrors from "../elements/alerts/AlertErrors";
 
-
-
+/**
+ * renders the "Form 8949" page
+ * @returns {JSX.Element}
+ * @constructor
+ */
 const Form8949Page = () => {
+    /**
+     * @type {[string, function]} taxYear: tax year selected in the top drowdown of th epage
+     */
     const [taxYear, setTaxYear] = useState('2022');
+
+    /**
+     * @type {[number, function]} exchangeRate: the exchange rate to apply to convert the local currency to USD
+     */
     const [exchangeRate, setExchangeRate] = useState(1);
+
+    /**
+     * @type {{string, function}} description: the format to use to render the first column of the Form8949 tables
+     */
     const [description, setDescription] = useState('#CURRENCY# #AMOUNT#');
+
+    /**
+     * @type {[string, function]} datesFormat: a DATE_FORMAT_* constant to select which date format to use for Form8949
+     */
     const [datesFormat, setDatesFormat] = useState(DATE_FORMAT_MM_DD_YYYY);
+
+    /**
+     * @type {[string, function]} multiDatesFormat: a MULTI_DATES_* constant to select how to handle multiple acquisition dates
+     */
     const [multiDatesFormat, setMultiDatesFormat] = useState(MULTI_DATES_STATIC);
+
+    /**
+     * @type {[string, function]} multiDatesText: text to use as static text when using MULTI_DATES_STATIC form multiple dates
+     */
     const [multiDatesText, setMultiDatesText] = useState('VARIOUS');
+
+    /**
+     * @type {[string, function]} multiDatesSeparator: separator to use if joining multiple dates
+     */
     const [multiDatesSeparator, setMultiDatesSeparator] = useState('|');
+
+    /**
+     * @type {[string, function]} name to render on From8949
+     */
     const [name, setName] = useState('');
+
+    /**
+     * @type {[string, function]} ssn to render on Form8949
+     */
     const [ssn, setSsn] = useState('');
 
+    /**
+     * @type {{accounts: Object}} list of Account instances using the currency as the object key
+     */
     const {accounts} = useFileContext();
+
+    /**
+     * @type {{referenceCurrency: string}} the local or base currency that the assets were bought/sold with
+     */
     const {referenceCurrency} = useSettingsContext();
 
+    /**
+     * @type {[{shortTerm: Sale[], longTerm: Sale[]}, function]} Sale instances of sales made the selected year, grouped by long/short term
+     */
     const [salesData, setSalesData] = useState({shortTerm: [], longTerm: []});
-    const [salesTotals, setSalesTotals] = useState(() => getSalesTotals({}));
 
+    /**
+     * @type {[Object, function]}} total of sales made the selected year
+     */
+    const [salesTotals, setSalesTotals] = useState(() => getAllSalesTotals({}));
+
+    /**
+     * @type {[Object[], function]} sales data prepared for Form8949
+     */
     const [taxData, setTaxData] = useState(() => formatTaxData(salesData));
 
+    /**
+     * @type {[string[], function]} list of errors to display on the page
+     */
     const [errors, setErrors] = useState([]);
 
+    // extract from all the Account instances the sales made the selected year and group them by short/long term
     useEffect(() => {
+        /**
+         * @type {Sale[]} sales of short term assets sold the selected year
+         */
         const shortTerm = [];
+
+        /**
+         * @type {Sale[]} sales of long term assets sold the selected year
+         */
         const longTerm = [];
+
         Object.values(accounts).forEach(account => {
             account.listSales(false).forEach(sale => {
                 if ((sale.year === Number(taxYear)) && (sale.type === 'sale')) {
@@ -76,10 +142,12 @@ const Form8949Page = () => {
         setSalesData({shortTerm, longTerm});
     }, [accounts, taxYear]);
 
+    // update the sales totals
     useEffect(() => {
-        setSalesTotals(getSalesTotals({...salesData, exchangeRate}));
+        setSalesTotals(getAllSalesTotals({...salesData, exchangeRate}));
     }, [salesData, exchangeRate]);
 
+    // prepare the sales data for Form8949
     useEffect(() => {
         setTaxData(formatTaxData({
             ...salesData,
@@ -92,12 +160,19 @@ const Form8949Page = () => {
         }));
     }, [salesData, exchangeRate, description, datesFormat, multiDatesFormat, multiDatesText, multiDatesSeparator]);
 
+    // update the exchange rate when changing the year
     useEffect(() => {
         setExchangeRate(old => defaultExchangeRate({
             referenceCurrency, year: taxYear, defaultRate:old
         }));
     }, [taxYear, referenceCurrency])
 
+    /**
+     * Generate a pdf page of Form8949 and make it download it
+     * @param page {number} page number to generate
+     * @param part {'partI'|'partII'|'all'} which part of the form to generate
+     * @returns {(function(): Promise<void>)|*}
+     */
     const handleForm = ({page = 1, part = 'all'}) => async () => {
         try {
             setErrors([]);
@@ -194,8 +269,6 @@ const Form8949Page = () => {
                                 onChange={e => setMultiDatesSeparator(e.target.value)}
                             />
                         )}
-
-
                     </div>
                 </div>
 
@@ -271,12 +344,9 @@ const Form8949Page = () => {
                             II - Page {p + 1}
                         </Button>
                     ))}
-
                 </FlexWrapSection>
             </TitledBox>
-
         </div>
-
     );
 }
 

@@ -1,18 +1,35 @@
 import {useState} from "react";
 import AlertErrors from "../elements/alerts/AlertErrors";
-
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faFileCirclePlus, faTrash} from "@fortawesome/free-solid-svg-icons";
 import DataList from "../elements/lists/DataList";
 import BigFileButton from "../elements/buttons/BigFileButton";
 import useFiles from "../hooks/useFiles";
 
-
-
-
+/**
+ * Renders the "Files" page
+ * @returns {JSX.Element}
+ * @constructor
+ */
 const FilesPage = () => {
+    /**
+     * @type {[string[], function]} list of errors to display on the page
+     */
     const [errors, setErrors] = useState([]);
+
+    /**
+     * @type {{files: Object[], addFile: function, removeFile: function}}
+     *      files: the list of files uploaded, read from IndexDB
+     *      addFile: callback function to add a new uploaded csv file
+     *      removeFile: callback to remove a file from IndexDB
+     */
     const {files, addFile, removeFile} = useFiles();
+
+    /**
+     * Handles the upload of a new csv file
+     * @param e
+     * @returns {Promise<void>}
+     */
     const handleAddFile = async e => {
         setErrors([]);
         try {
@@ -25,12 +42,10 @@ const FilesPage = () => {
                 } catch (error) {
                     setErrors(old => [...old, error.message]);
                 }
-
             }
         } catch (error) {
             setErrors(old => [...old, error.message]);
         }
-
     }
 
     return (

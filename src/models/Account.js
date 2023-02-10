@@ -1,25 +1,69 @@
 import Purchase from "./Purchase";
 import Sale from "./Sale";
 
+/**
+ * The Account instance contains all the purchases and sales of a given cryptocurrency asset
+ * and maps the sales to their corresponding purchases, as a first in first out method
+ * allowing to calculate the gains/losses on each sale, as well as tracking the balance
+ */
 class Account
 {
+    /**
+     * Initiates the Account instance
+     * @param currency {string} currency of the Account (e.g. BTC)
+     * @param referenceCurrency {string} local or base currency the assets were bought and sold (e.g. EUR)
+     */
     constructor({currency, referenceCurrency}) {
+        /**
+         * @type {string} cryptocurrency of the account
+         */
         this.currency = currency;
+
+        /**
+         * @type {string} local or base currency
+         */
         this.referenceCurrency = referenceCurrency;
+
+        /**
+         * @type {Purchase[]} list of all the purchases of this cryptocurrency
+         */
         this.purchases = [];
+
+        /**
+         * @type {Sale[]} list of all the sales of this cryptocurrency
+         */
         this.sales = [];
+
+        /**
+         * @type {number} index of the oldest purchase that has not yet been sold
+         */
         this.cursor = 0;
+
+        /**
+         * @type {number} total amount of the cryptocurrency purchased
+         */
         this.purchased = 0.0;
+
+        /**
+         * @type {number} total amount of the cryptocurrency sold
+         */
         this.sold = 0.0;
     }
 
+    /**
+     * Add a new Pair (purchase or sale transaction) to the account
+     * @param pair {Pair} Pair instance to add
+     */
     addPair(pair) {
+        // if the pair is a purchase
         if (pair.cryptoAmount > 0) {
             const purchase = new Purchase(pair);
             this.purchased += purchase.purchased;
             purchase.balanceToDate = this.purchased - this.sold ;
             this.purchases.push(purchase);
         }
+
+        // if the pair is a sale
         if (pair.cryptoAmount < 0) {
             const sale = new Sale(pair);
             try {
@@ -33,6 +77,8 @@ class Account
                 // for sales, the fee is excluded from the amount
                 this.sold += sale.sold;
             } catch (saleError) {
+                // if there are missing transactions in the app, it is possible that a sale would not have any corresponding purchase
+                // in which case it is an error, and the user must figure out what statement files are missing
                 sale.error = saleError?.message ?? saleError;
             }
             sale.balanceToDate = this.purchased - this.sold ;
@@ -40,6 +86,13 @@ class Account
         }
     }
 
+    /**
+     * computes what purchases corresponds to a sale
+     * @param matchAmount {Number} amount of the cryptocurrency that was sold
+     * @returns {{cursor: number, purchases: Object[]}}
+     *          cursor: new cursor after purchase is processed
+     *          purchases: list of purchases, just the general information about the purchases
+     */
     matchSaleToPurchases (matchAmount) {
         let cursor = this.cursor;
         let loopAmount = matchAmount;
@@ -47,6 +100,7 @@ class Account
         const floatIncertitude = loopAmount / 1000000000;
         const purchases = [];
 
+        // find all the purchases needed to match the amount of the sale
         while (loopAmount > floatIncertitude) {
             if (cursor >= this.purchases.length) {
                 throw new Error('Missing purchase');
@@ -84,6 +138,10 @@ class Account
         return { purchases, cursor };
     }
 
+    /**
+     * generate a list of all purchases and sales, this is rendered on the "Transactions" page
+     * @returns {Object[]} list of purchases
+     */
     listTransactions() {
         return [
             ...this.purchases.map((purchase, index) => purchase.details({index})),
@@ -91,6 +149,11 @@ class Account
         ].map(row => ({...row, 'balanceValue': (row.cryptoBalance * row.rateToLocal).toFixed(2)}));
     }
 
+    /**
+     * Empty data for a year summary, the year data os rendered on the "Accounts" page
+     * @param firstItem {Object} the first purchase or sale of assets of the currency, this is used to set the defaults
+     * @returns {Object}
+     */
     yearTemplate(firstItem) {
         return {
             currency: this.currency,
@@ -107,6 +170,8 @@ class Account
             lastDate: firstItem.pair.dateTime,
             lastBalance: firstItem.pair.cryptoBalance,
             lastBalanceValue: firstItem.pair.cryptoBalance * firstItem.pair.rateToLocal,
+            maxBalance : firstItem.pair.cryptoBalance,
+            maxBalanceValue: firstItem.pair.cryptoBalance * firstItem.pair.rateToLocal,
             minRate: firstItem.pair.rateToLocal,
             maxRate: firstItem.pair.rateToLocal,
             gain: 0.0,
@@ -114,6 +179,10 @@ class Account
         }
     }
 
+    /**
+     * Generate the summary of the cryptocurrencies purchases and sales by year
+     * @returns {Object}
+     */
     summary() {
         const years = {};
 
@@ -125,14 +194,33 @@ class Account
             years[purchase.pair.year].purchased += purchase.purchased;
             years[purchase.pair.year].purchasedFor += Math.abs(purchase.pair.localAmount);
             years[purchase.pair.year].totalFeesValue += purchase.purchaseFeeValue;
+
+            // the balanceValue is the cryptocurrency balance converted to the local/reference currency
+            const balanceValue = purchase.pair.cryptoBalance * purchase.pair.rateToLocal;
+
+            // get the last balance of the year
             if (purchase.pair.dateTime > years[purchase.pair.year].lastDate) {
                 years[purchase.pair.year].lastDate = purchase.pair.dateTime;
                 years[purchase.pair.year].lastBalance = purchase.pair.cryptoBalance;
-                years[purchase.pair.year].lastBalanceValue = purchase.pair.cryptoBalance * purchase.pair.rateToLocal;
+                years[purchase.pair.year].lastBalanceValue = balanceValue;
             }
+
+            // get the highest balance of cryptocurrencies
+            if (years[purchase.pair.year].maxBalance < purchase.pair.cryptoBalance) {
+                years[purchase.pair.year].maxBalance = purchase.pair.cryptoBalance;
+            }
+
+            // get the highest balance value, converted in the local/reference currency
+            if (years[purchase.pair.year].maxBalanceValue <balanceValue) {
+                years[purchase.pair.year].maxBalance = balanceValue;
+            }
+
+            // get the lowest exchange rate used in the year
             if (years[purchase.pair.year].minRate > purchase.pair.rateToLocal) {
                 years[purchase.pair.year].minRate = purchase.pair.rateToLocal
             }
+
+            // get the highest exchange rate used in the year
             if (years[purchase.pair.year].maxRate < purchase.pair.rateToLocal) {
                 years[purchase.pair.year].maxRate = purchase.pair.rateToLocal
             }
@@ -143,6 +231,9 @@ class Account
                 years[sale.pair.year] = this.yearTemplate(sale);
             }
 
+            // an invalid sale is a sale that did not have a corresponding purchase
+            // this happens when there are missing statement files, only the user can correct this
+            // by providing the corresponding statement files
             if (sale.type() === 'invalidSale') {
                 years[sale.pair.year].salesInvalid += 1;
                 years[sale.pair.year].soldInvalid += Math.abs(sale.sold);
@@ -155,11 +246,26 @@ class Account
                 years[sale.pair.year].totalFeesValue += sale.purchaseFeeValue + sale.saleFeeValue;
             }
 
+            // the balanceValue is the cryptocurrency balance converted to the local/reference currency
+            const balanceValue = sale.pair.cryptoBalance * sale.pair.rateToLocal;
+
+            // get the last balance of the year
             if (sale.pair.dateTime > years[sale.pair.year].lastDate) {
                 years[sale.pair.year].lastDate = sale.pair.dateTime;
                 years[sale.pair.year].lastBalance = sale.pair.cryptoBalance;
-                years[sale.pair.year].lastBalanceValue = sale.pair.cryptoBalance * sale.pair.rateToLocal;
+                years[sale.pair.year].lastBalanceValue = balanceValue;
             }
+
+            // get the highest balance of cryptocurrencies
+            if (years[sale.pair.year].maxBalance < sale.pair.cryptoBalance) {
+                years[sale.pair.year].maxBalance = sale.pair.cryptoBalance;
+            }
+
+            // get the highest balance value, converted in the local/reference currency
+            if (years[sale.pair.year].maxBalanceValue <balanceValue) {
+                years[sale.pair.year].maxBalance = balanceValue;
+            }
+
             if (years[sale.pair.year].minRate > sale.pair.rateToLocal) {
                 years[sale.pair.year].minRate = sale.pair.rateToLocal
             }
@@ -171,6 +277,11 @@ class Account
         return years;
     }
 
+    /**
+     * Generate the list of sales, with or without the corresponding purchases
+     * @param withPurchases {boolean} if set to true, the output will include a row per purchase, if false, only the sale are returned
+     * @returns {*[]}
+     */
     listSales(withPurchases = true) {
         const salesList = [];
         this.sales.forEach((sale, id) => {
@@ -188,6 +299,8 @@ class Account
                 purchases: sale.purchases.length,
                 purchaseDates: [...sale.purchases.reduce((prev, {date}) => prev.add(date), new Set())],
             }
+
+            // if we are including the purchases, we generate a row per purchase, all rows contain the dales data
             if (withPurchases) {
                 sale.purchases.forEach(({purchaseId, amount, localAmount, feeValue}, purchaseIndex) => {
                     const purchase = this.purchases[purchaseId];

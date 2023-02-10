@@ -1,5 +1,12 @@
 import SimpleButton from "./SimpleButton";
 
+/**
+ * A generic styled button
+ * @param className {string} additional classes to add to the button
+ * @param props {children|onClick|Any} additional props that will be passed on to the <button /> element
+ * @returns {JSX.Element}
+ * @constructor
+ */
 const DefaultButton = ({className, ...props}) => {
     return (
         <SimpleButton

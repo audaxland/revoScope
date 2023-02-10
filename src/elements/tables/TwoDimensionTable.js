@@ -1,3 +1,13 @@
+/**
+ * Renders a two-dimensional table
+ * @param data {Object[]} two dimensional array of objects containing the data to render
+ * @param cornerCell {string|JSX.Element} optional content to render in the top left cell of the table
+ * @param tableClassName {string} classes to apply to the <table /> element
+ * @param headerClassNames {string} classes to apply to the header cells
+ * @param cellClassName {string} classes to apply to all cells
+ * @returns {JSX.Element}
+ * @constructor
+ */
 const TwoDimensionTable = ({
         data,
         cornerCell = '',

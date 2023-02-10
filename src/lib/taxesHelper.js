@@ -1,9 +1,19 @@
-// The following exchange rates are copied from
-// https://www.irs.gov/individuals/international-taxpayers/yearly-average-currency-exchange-rates
-import {cleanDecimalString, formatDateString, formatMultiDateString} from "./formatHelper";
+import {
+    cleanDecimalString,
+    DATE_FORMAT_MM_DD_YYYY,
+    formatDateString,
+    formatMultiDateString,
+    MULTI_DATES_STATIC
+} from "./formatHelper";
 import {exportCsvFile} from "./exportHelper";
 import moment from "moment";
 
+/**
+ * currency conversion rates per year used as default exchange rate between the local/base currency and usd for generating the Form8949
+ * The following exchange rates are copied from
+ * https://www.irs.gov/individuals/international-taxpayers/yearly-average-currency-exchange-rates
+ * @type {Object}
+ */
 export const taxYearExchangeRates = {
     'AFN': {country: 'Afghanistan', currency: 'Afghani', 	rates: {'2022': '90.084', 	'2021': '83.484', 	'2020': '76.651', 	'2019': '77.579'}},
     'DZD': {country: 'Algeria', 	currency: 'Dinar', 		rates: {'2022': '142.123', 	'2021': '135.011', 	'2020': '126.741', 	'2019': '119.402'}},
@@ -45,45 +55,62 @@ export const taxYearExchangeRates = {
     'GBP': {country: 'United Kingdom', currency: 'Pound', 	rates: {'2022': '0.811', 	'2021': '0.727', 	'2020': '0.779', 	'2019': '0.784'	}},
 }
 
+/**
+ * Get the default exchange rate from USD for a given currency and year
+ * @param referenceCurrency {string} the currency to exchange into usd
+ * @param year {string|Number} the year the rate is needed for
+ * @param defaultRate {Number} rate to return for unknown currencies or year
+ * @returns {number}
+ */
 export const defaultExchangeRate = ({referenceCurrency, year, defaultRate = 1}) => {
     return Number(taxYearExchangeRates[referenceCurrency]?.rates?.[year.toString()] ?? defaultRate);
 }
 
-
-export const getSalesTotals = ({shortTerm = [], longTerm = [], exchangeRate = 1}) => {
+/**
+ * Calculates the totals of a list of sales
+ * @param sales {Sale[]} list of sales to get the totals of
+ * @param exchangeRate {Number} exchange rate to apply
+ * @returns {{soldFor: Number, totalCost: Number, gain: Number}}
+ */
+export const getSalesTotals = (sales, exchangeRate = 1) => {
     const rate = (!isNaN(Number(exchangeRate))) && (exchangeRate > 0) ? Number(exchangeRate) : 1;
 
-    const totalsTemplate = {
+    return sales.reduce((prev, curr) => {
+        prev.soldFor += curr.soldFor / rate;
+        prev.totalCost += curr.totalCost / rate;
+        prev.gain += curr.gain / rate;
+        return prev;
+    }, {
         soldFor: 0.0,
         totalCost: 0.0,
         gain: 0.0,
-    }
-    const shortTermTotals = {...totalsTemplate}
-    const shortTermTotalsUsd = {...totalsTemplate}
-    const longTermTotals = {...totalsTemplate}
-    const longTermTotalsUsd = {...totalsTemplate}
-
-    shortTerm.forEach(saleItem => {
-        shortTermTotals.soldFor += saleItem.soldFor;
-        shortTermTotals.totalCost += saleItem.totalCost;
-        shortTermTotals.gain += saleItem.gain;
-        shortTermTotalsUsd.soldFor += saleItem.soldFor / rate;
-        shortTermTotalsUsd.totalCost += saleItem.totalCost / rate;
-        shortTermTotalsUsd.gain += saleItem.gain / rate;
     });
-
-    longTerm.forEach(saleItem => {
-        longTermTotals.soldFor += saleItem.soldFor;
-        longTermTotals.totalCost += saleItem.totalCost;
-        longTermTotals.gain += saleItem.gain;
-        longTermTotalsUsd.soldFor += saleItem.soldFor / rate;
-        longTermTotalsUsd.totalCost += saleItem.totalCost / rate;
-        longTermTotalsUsd.gain += saleItem.gain / rate;
-    });
-
-    return {shortTermTotals, shortTermTotalsUsd, longTermTotals, longTermTotalsUsd}
 }
 
+/**
+ * get all the totals for both short term sales and long term sales, and in both the local currency and USD
+ * @param shortTerm {Sale[]} list of short term assets sales
+ * @param longTerm {Sale[]} list of long term assets sales
+ * @param exchangeRate {Number} exchange rate to convert to USD
+ * @returns {{shortTermTotals: {soldFor: Number, totalCost: Number, gain: Number}, shortTermTotalsUsd: {soldFor: Number, totalCost: Number, gain: Number}, longTermTotalsUsd: {soldFor: Number, totalCost: Number, gain: Number}, longTermTotals: {soldFor: Number, totalCost: Number, gain: Number}}}
+ */
+export const getAllSalesTotals = ({shortTerm = [], longTerm = [], exchangeRate = 1}) => {
+    return {
+        shortTermTotals: getSalesTotals(shortTerm),
+        shortTermTotalsUsd: getSalesTotals(shortTerm, exchangeRate),
+        longTermTotals: getSalesTotals(longTerm),
+        longTermTotalsUsd: getSalesTotals(longTerm, exchangeRate),
+    }
+}
+
+/**
+ * Convert the lists of Sale[] arrays to a format prepared for generating the Form8949
+ * the format generated is in part controlled by the form settings set on the "Form 8949" page
+ * @param shortTerm {Sale[]} list of short term assets sales
+ * @param longTerm {Sale[]} list of long term asset sales
+ * @param rest {object} optional additional data needed to format the data (date format, exchange rate, ...)
+ * @returns {{partII: Object[], partI: Object[]}}
+ */
 export const formatTaxData = ({shortTerm, longTerm, ...rest}) => ({
     partI: formatTaxPart({
         data: shortTerm,
@@ -95,16 +122,29 @@ export const formatTaxData = ({shortTerm, longTerm, ...rest}) => ({
     }),
 })
 
+/**
+ * Converts the sales data from Sale instances to the format used on Form 8949, either for short term or long term asset sales
+ * @param part {'Part I'|'Part II'} which part of the form the data is for
+ * @param checkbox {'A'|'B'|'C'|'D'|'E'|'F'}
+ * @param data {Sale[]} list of Sale instances to convert
+ * @param exchangeRate {Number}  exchange rate to apply to convert to USD
+ * @param description {string} format to use in generating the description field
+ * @param datesFormat {string} format to use for dates (default is 'MM/DD/YYYY')
+ * @param multiDatesFormat {string} constant to set how to treat multiple acquisition dates
+ * @param multiDatesText {string} text to use if using static text (MULTI_DATES_STATIC)
+ * @param multiDatesSeparator {string} text to join dates if joining dates
+ * @returns {Object[]}
+ */
 export const formatTaxPart = ({
     part = 'Part I',
     checkbox = 'A',
     data,
     exchangeRate,
     description,
-    datesFormat,
-    multiDatesFormat,
-    multiDatesText,
-    multiDatesSeparator,
+    datesFormat= DATE_FORMAT_MM_DD_YYYY,
+    multiDatesFormat= MULTI_DATES_STATIC,
+    multiDatesText = 'VARIOUS',
+    multiDatesSeparator = '|',
 }) => {
     if (!data) return [];
     const rate = (!isNaN(Number(exchangeRate))) && (exchangeRate > 0) ? Number(exchangeRate) : 1;
@@ -132,9 +172,15 @@ export const formatTaxPart = ({
         g: '',
         // h: gain
         h: (row.gain / rate).toFixed(2),
-    }))
+    }));
 }
 
+/**
+ * Export the Form8949 data into a csv file
+ * @param taxData {{partI: Object[], partII: Object[]}} data formatted for Form8949
+ * @param taxYear {string|Number} tax year (only used to generate the default filename
+ * @param filename {string} filename to use for the export file
+ */
 export const exportTaxDataCsv = ({taxData, taxYear, filename}) => {
     exportCsvFile({
         exportData: [...taxData.partI, ...taxData.partII],

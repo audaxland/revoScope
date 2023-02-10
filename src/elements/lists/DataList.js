@@ -1,6 +1,14 @@
 import DataCell from "./DataCell";
 import ActionCell from "./ActionCell";
 
+/**
+ * Renders a styled table with flex divs
+ * @param dataRows {Object[]} data to render in the cells of the table
+ * @param titles {Object} titles of the cells, associating the field name and the corresponding title
+ * @param actions {Object} action buttons {<field>: <icon>} icons to render on each row
+ * @returns {JSX.Element}
+ * @constructor
+ */
 const DataList = ({dataRows, titles, actions}) => {
     return (
         <div

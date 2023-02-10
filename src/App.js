@@ -2,6 +2,11 @@ import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom";
 import AppLayout from "./layout/AppLayout";
 import appRoutes from "./appRoutes";
 
+/**
+ * The RevoGain App root component
+ * @returns {JSX.Element}
+ * @constructor
+ */
 function App() {
   return (
     <BrowserRouter>
