@@ -1,8 +1,9 @@
 import {useFileContext} from "../../store/FilesContext";
-import GridWithControl from "./parts/GridWithControl";
+import GridWithControl from "../../elements/grids/GridWithControl";
 import {useCallback, useEffect, useMemo, useState} from "react";
-import DefaultButton from "../buttons/DefaultButton";
-import {cleanDecimal} from "./parts/gridHelper";
+import DefaultButton from "../../elements/buttons/DefaultButton";
+import {cleanDecimal} from "../../elements/grids/gridHelper";
+import gridHelpFile from './gainsGridHelp.yml';
 
 /**
  * Renders the "Sales Gain" grid
@@ -106,6 +107,7 @@ const SalesGrid = () => {
                 getRowStyle,
                 suppressRowTransform: true,
                 gridName: 'Sales',
+                gridHelpFile,
             }}
 
             // preGrid is the top section above the grid, with the buttons to toggle the sale with/without the purchases

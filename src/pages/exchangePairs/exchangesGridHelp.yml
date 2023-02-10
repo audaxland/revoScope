@@ -1,0 +1,20 @@
+gridFields:
+  Matched By: >
+    The way the Pair was created, either "date-time" for pairs matched automatically, 
+    or "manual" for pairs matched via the "Orphan Exchange" page
+  Date: Date of the transaction.
+  Start Date: Date of the transaction including the time. This is the "Start Date" from the csv file.
+  Crypto Currency: Currency of the cryptocurrency record.
+  Crypto Amount: Amount of the cryptocurrency record.
+  Crypto Balance: Balance of the cryptocurrency record.
+  Crypto Fee: Fee of the cryptocurrency record.
+  Crypto Files: Files in which the cryptocurrency record was found.
+  Crypto Description: Description of the cryptocurrency record.
+  Crypto Key: Internal key of the cryptocurrency record.
+  Base Currency: Currency of the local record.
+  Base Amount: Amount of the local record.
+  Base Balance: Balance of the local record.
+  Base Fee: Fee of the local record.
+  Base Files: Files in which the local record was found.
+  Base Description: Description of the local record.
+  Base Key: Internal key of the local record.

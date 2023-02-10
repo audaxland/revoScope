@@ -1,4 +1,4 @@
-import SalesGrid from "../elements/grids/SalesGrid";
+import SalesGrid from "./SalesGrid";
 
 /**
  * Renders the "Sales Gain" page

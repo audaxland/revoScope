@@ -1,11 +1,11 @@
-import OrphanExchangesGrid from "../elements/grids/OrphanExchangesGrid.js";
+import OrphanExchangesGrid from "./OrphanExchangesGrid.js";
 
 /**
  * Renders the "Orphan Exchanges" page
  * @returns {JSX.Element}
  * @constructor
  */
-const ExchangesOrphanPage = () => {
+const OrphanExchangesPage = () => {
     return (
         <div>
             <OrphanExchangesGrid />
@@ -13,4 +13,4 @@ const ExchangesOrphanPage = () => {
     );
 }
 
-export default ExchangesOrphanPage;
+export default OrphanExchangesPage;

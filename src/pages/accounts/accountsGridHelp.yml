@@ -1,0 +1,23 @@
+gridFields:
+  Currency: Cryptocurrency of the Account.
+  Year: Year.
+  Purchases: Number of purchases made that year.
+  Sales: Number of sales made that year.
+  Sales Invalid: Number of sales made that year for which no corresponding purchase was found.
+  Purchased: Amount of the cryptocurrency acquired during the year.
+  Purchased For: Value of cryptocurrency acquired during the year, converted to the local/base currency.
+  Sold: Amount of the cryptocurrency sold during the year.
+  Sold For: Value of cryptocurrency sold during the year, converted to the local/base currency.
+  Sold Invalid: | 
+    Amount of the cryptocurrency sold during the year for which no corresponding purchase was found.
+    Note: If there are sales in this column, this means there a missing statement files that you need to upload to the app.
+  Sold Invalid For: Value of cryptocurrency sold during the year for which no purchases were found, converted to the local/base currency.
+  Gain: Amount gained or lost trading this cryptocurrency during the year. This is in your local/base currency.
+  Last Balance: Last balance of the cryptocurrency for that year.
+  Last Balance Value: Value of the last balance of the cryptocurrency for that year, converted to your local/base currency.
+  Max Balance: Highest balance of the cryptocurrency reached that year.
+  Max Balance Value: Value of the highest balance of the cryptocurrency reached that year, converted to your local/base currency.
+  Last Date: Date of the last transaction of the year
+  Min Rate: Lowest conversion rate used during the year.
+  Max Rate: Highest conversion rate used during the year.
+  Total Fees Value: Total amount of fees payed during the year, converted to the local/base currency when needed.

@@ -1,4 +1,4 @@
-import AccountsGrid from "../elements/grids/AccountsGrid";
+import AccountsGrid from "./AccountsGrid";
 
 /**
  * Renders the "Account" page

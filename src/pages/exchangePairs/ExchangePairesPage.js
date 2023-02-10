@@ -1,11 +1,11 @@
-import PairedExchangesGrid from "../elements/grids/PairedExchangesGrid";
+import PairedExchangesGrid from "./PairedExchangesGrid";
 
 /**
  * Renders the "Exchange Pairs" page
  * @returns {JSX.Element}
  * @constructor
  */
-const ExchangesPairedPage = () => {
+const ExchangePairesPage = () => {
 
     return (
         <div>
@@ -14,4 +14,4 @@ const ExchangesPairedPage = () => {
     );
 }
 
-export default ExchangesPairedPage;
+export default ExchangePairesPage;

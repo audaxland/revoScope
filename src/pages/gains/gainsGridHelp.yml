@@ -1,0 +1,24 @@
+gridFields:
+  Id: Internal Id of the sale.
+  Year: Sale year.
+  Date: Date of the sale.
+  Date Time: Date and time of the sale.
+  Currency: Currency of the cryptocurrency asset sold.
+  Sold: Amount of the cryptocurrency sold.
+  Sold For: Price in the local amount tha the cryptocurrency asset was sold for.
+  Local Currency: Local currency that the cryptocurrency was sold for.
+  Total Cost: Cost in the local currency of the purchase including the purchase fees and the sale fees.
+  Cost: Cost in the local currency of the purchase, excluding all fees.
+  Purchase Fee Value: Fee in the local currency of the fees paid to purchase the assets.
+  Sale Fee Value: Fee in the local currency of the fee paid to sell the assets.
+  Gain: Amount in the local currency gained or lost when selling the assets.
+  Crypto Amount: Value of the "Amount" field in the record of the sale in the csv statement file of the cryptocurrency.
+  Rate To Crypto: Conversion rate used for the sale, from the local currency to the cryptocurrency currency.
+  Rate To Local: Conversion rate used for the sale, from the cryptocurrency currency to the local currency.
+  Type: Either "sale" for a normal sale or "invalid sale" for sales that the app could not map the their purchase
+  Purchases: Number of purchases corresponding to this sale.
+  Purchase Dates: Date or list of dates of the purchase(s).
+  Purchase Item Date Time: Date and time of a purchase.
+  Purchase Item Amount: Amount in the cryptocurrency, of the purchase that was imputed to the sale.
+  Purchase Item For: Amount of the local currency that was paid to purchase the cryptocurrency amount imputed to the sale.
+  Purchase Item Fee Value: Amount of fee in the local currency that was paid to purchase the cryptocurrency amount imputed to the sale.

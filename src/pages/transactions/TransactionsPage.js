@@ -1,4 +1,4 @@
-import TransactionsGrid from "../elements/grids/TransactionsGrid";
+import TransactionsGrid from "./TransactionsGrid";
 
 /**
  * Renders the "Transactions" page

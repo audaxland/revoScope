@@ -1,10 +1,11 @@
 import {useFileContext} from "../../store/FilesContext";
 import {useEffect, useMemo, useState} from "react";
-import GridWithControl from "./parts/GridWithControl";
+import GridWithControl from "../../elements/grids/GridWithControl";
 import {getRecordByKey} from "../../store/dbRecords";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faSpinner, faTrash} from "@fortawesome/free-solid-svg-icons";
 import {deleteManualPairByKey} from "../../store/dbManualPairs";
+import gridHelpFile from './exchangesGridHelp.yml';
 
 /**
  * Renders the "Matched by" cell of the grid, this includes a possible "delete" icon button to un-pair a manal pair
@@ -69,28 +70,31 @@ const PairedExchangesGrid = () => {
         (async () => {
             const newRows = await Promise.all(pairs.map(async (pair, index) => {
                 // here we fetch the data from IndexDb because the "files" field is not stored in the pair
-                const raw = [
-                    await getRecordByKey(pair.localKey),
-                    await getRecordByKey(pair.cryptoKey),
-                ];
+                const localRecord = await getRecordByKey(pair.localKey);
+                const cryptoRecord = await getRecordByKey(pair.cryptoKey);
 
                 return {
                     index,
-                    date: raw[0].date,
-                    'Started Date': raw[0]['Started Date'],
-                    Currency_1: raw[0].Currency,
-                    Amount_1: raw[0].Amount,
-                    Balance_1: raw[0].Balance,
-                    Fee_1: raw[0].Fee,
-                    files_1: raw[0].files,
-                    Currency_2: raw[1].Currency,
-                    Amount_2: raw[1].Amount,
-                    Balance_2: raw[1].Balance,
-                    Fee_2: raw[1].Fee,
-                    files_2: raw[1].files,
+                    date: localRecord.date,
+                    'Started Date': localRecord['Started Date'],
+                    CryptoCurrency: cryptoRecord.Currency,
+                    CryptoAmount: cryptoRecord.Amount,
+                    CryptoBalance: cryptoRecord.Balance,
+                    CryptoFee: cryptoRecord.Fee,
+                    CryptoFiles: cryptoRecord.files,
+                    CryptoDescription: cryptoRecord.Description,
+                    CryptoKey: cryptoRecord.key,
+                    BaseCurrency: localRecord.Currency,
+                    BaseAmount: localRecord.Amount,
+                    BaseBalance: localRecord.Balance,
+                    BaseFee: localRecord.Fee,
+                    BaseFiles: localRecord.files,
+                    BaseDescription: localRecord.Description,
+                    BaseKey: localRecord.key,
                     ...pair,
                 }
             }))
+
             setPairRows(newRows);
         })();
     }, [pairs]);
@@ -108,24 +112,29 @@ const PairedExchangesGrid = () => {
             valueGetter: ({data}) => data['Started Date'].split(' ')[0],
         },
         {field: 'Started Date', hide: true},
-        {field: 'Currency_1'},
-        {field: 'Amount_1'},
-        {field: 'Balance_1', hide: true},
-        {field: 'Fee_1', hide: true},
+        {field: 'CryptoCurrency'},
+        {field: 'CryptoAmount'},
+        {field: 'CryptoBalance', hide: true},
+        {field: 'CryptoFee', hide: true},
         {
-            field: 'files_1',
-            valueGetter: ({data}) => data.files_1.map(id => fileMap[id] ?? '').join('|'),
+            field: 'CryptoFiles',
+            valueGetter: ({data}) => data.CryptoFiles.map(id => fileMap[id] ?? '').join('|'),
             hide: true,
         },
-        {field: 'Currency_2'},
-        {field: 'Amount_2'},
-        {field: 'Balance_2', hide: true},
-        {field: 'Fee_2', hide: true},
+        {field: 'CryptoDescription', hide: true},
+        {field: 'CryptoKey', hide: true},
+        {field: 'BaseCurrency'},
+        {field: 'BaseAmount'},
+        {field: 'BaseBalance', hide: true},
+        {field: 'BaseFee', hide: true},
         {
-            field: 'files_2',
-            valueGetter: ({data}) => data.files_2.map(id => fileMap[id] ?? '').join('|'),
+            field: 'BaseFiles',
+            valueGetter: ({data}) => data.BaseFiles.map(id => fileMap[id] ?? '').join('|'),
             hide: true,
         },
+        {field: 'BaseDescription', hide: true},
+        {field: 'BaseKey', hide: true},
+
     ], [fileMap]);
 
 
@@ -133,7 +142,8 @@ const PairedExchangesGrid = () => {
         <GridWithControl {...{
             rowData: pairRows,
             columnDefs,
-            gridName: 'ExchangePairs'
+            gridName: 'ExchangePairs',
+            gridHelpFile,
         }} />
     );
 }

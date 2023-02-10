@@ -1,7 +1,8 @@
-import GridWithControl from "./parts/GridWithControl";
+import GridWithControl from "../../elements/grids/GridWithControl";
 import {useCallback, useEffect, useMemo, useState} from "react";
 import {useFileContext} from "../../store/FilesContext";
-import {cleanDecimal} from "./parts/gridHelper";
+import {cleanDecimal} from "../../elements/grids/gridHelper";
+import gridHelpFile from './transactionsGridHelp.yml';
 
 /**
  * Renders the "Transactions" grid
@@ -74,6 +75,7 @@ const TransactionsGrid = () => {
             columnDefs,
             getRowStyle,
             gridName: 'Transactions',
+            gridHelpFile
         }} />
     );
 }

@@ -1,7 +1,8 @@
 import {useFileContext} from "../../store/FilesContext";
-import GridWithControl from "./parts/GridWithControl";
+import GridWithControl from "../../elements/grids/GridWithControl";
 import {useCallback, useEffect, useMemo, useState} from "react";
-import {cleanDecimal} from "./parts/gridHelper";
+import {cleanDecimal} from "../../elements/grids/gridHelper";
+import gridHelpFile from './accountsGridHelp.yml';
 
 /**
  * Renders the Accounts Grid
@@ -75,7 +76,8 @@ const AccountsGrid = () => {
             rowData,
             columnDefs,
             getRowStyle,
-            gridName: 'Accounts'
+            gridName: 'Accounts',
+            gridHelpFile
         }} />
     );
 }

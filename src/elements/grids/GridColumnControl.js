@@ -53,7 +53,7 @@ const GridColumnControl = ({gridRef}) => {
     }
 
     return (
-        <div>
+        <div className="w-60">
             <h4
                 className="font-bold text-lg text-center text-gray-800 mb-5"
             >

@@ -12,6 +12,7 @@ import styles from './gridStyles.module.css';
  * @param rowData {Object[]} data to render on the grid
  * @param columnDefs {Object[]} definition of the columns of the grid
  * @param gridReady {function} optional callback to execute on the onGridReady event of the grid
+ * @param gridHelpFile {string} the path to the grid help file
  * @param rest {*} any other props to pass on to the <AgGridReact /> element
  * @returns {JSX.Element}
  * @constructor
@@ -22,6 +23,7 @@ const GridWithControl = ({
      rowData,
      columnDefs,
      gridReady,
+     gridHelpFile,
     ...rest
  }) => {
     /**
@@ -86,7 +88,7 @@ const GridWithControl = ({
                 </div>
 
             </div>
-            <GridControlBar {...{rowData}} gridRef={typeof gridRef === 'undefined' ? localRef : gridRef} />
+            <GridControlBar {...{gridHelpFile}} gridRef={typeof gridRef === 'undefined' ? localRef : gridRef} />
         </div>
     );
 }

@@ -1,0 +1,30 @@
+gridFields:
+  Year: Transaction year.
+  Month: Transaction month.
+  Date Time: Date and time of the transaction in the format "YYYY-MM-DD HH:MM:SS".
+  Currency: Cryptocurrency bought or sold.
+  Purchased: Amount of the cryptocurrency bought.
+  Sold: Amount of the cryptocurrency sold.
+  Crypto Amount: Cryptocurrency amount of the transaction read from the "Amount" field in the csv statement file of the cryptocurrency.
+  Local Amount: Local currency amount of the transaction, read from the "Amount" field int the csv statement file of the local/base currency.
+  Local Currency: Currency of the local or base currency.
+  Crypto Balance: Balance of the cryptocurrency account read from the csv statement file of the cryptocurrency.
+  Balance To Date: |
+    Balance of the cryptocurrency tracked internally by comparing the sum of all purchases and the sum of all sales.
+    Note: If this amount does not match the amount in the "Crypto Balance" this means that there are missing transactions in the app.
+    This can happen if the statement files do not cover the entire period that you have bought/sold the cryptocurrency, or if some records pairs have not been matched. 
+    Check the "Orphan Exchanges" page to match record pairs that are not matched, or check your statement files to find the missing records.
+  Balance Value: Balance of the cryptocurrency account read from the csv file of the cryptocurrency and converted to your local currency, by applying the last exchange rate used.
+  Balance Delta: |
+    Difference between the value of the "Crypto Balance" field and the value of the "Balance To Date" field. 
+    If this amount is not zero, then there are missing transactions in the app. 
+    In which case you need to check the "Orphan Exchanges" page and/or your statement files.
+  Gain: |
+    Amount in the local currency of the gain or loss obtained when selling the cryptocurrency.
+    The gain only applies to sales, not to purchases
+  Type: Type of the transaction, either "purchase" or "sale" or "invalid sale" for sales that could not be matched to their purchase.
+  Rate To Local: Conversion rate used for the transaction, from the cryptocurrency to the local currency.
+  Rate To Crypto: Conversion rate used for the transaction, from the local currency to the cryptocurrency.
+  Cost: Cost of the purchase in the local currency, excluding the fees.
+  Purchase Fee Value: Fees in the local currency paid to purchase the cryptocurrencies.
+  Sale Fee Value: Fees in the local currency paid to sell the cryptocurrencies.

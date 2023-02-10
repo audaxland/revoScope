@@ -9,12 +9,12 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import OverviewPage from "./pages/OverviewPage";
 import FilesPage from "./pages/FilesPage";
-import Records from "./pages/Records";
-import ExchangesPairedPage from "./pages/ExchangesPairedPage";
-import ExchangesOrphanPage from "./pages/ExchangesOrphanPage";
-import AccountsPage from "./pages/AccountsPage";
-import GainsPage from "./pages/GainsPage";
-import TransactionsPage from "./pages/TransactionsPage";
+import RecordsPage from "./pages/records/RecordsPage";
+import ExchangePairesPage from "./pages/exchangePairs/ExchangePairesPage";
+import OrphanExchangesPage from "./pages/orphanExchanges/OrphanExchangesPage";
+import AccountsPage from "./pages/accounts/AccountsPage";
+import GainsPage from "./pages/gains/GainsPage";
+import TransactionsPage from "./pages/transactions/TransactionsPage";
 import Form8949Page from "./pages/Form8949Page";
 import SettingsPage from "./pages/SettingsPage";
 
@@ -54,24 +54,24 @@ const appRoutes = [
         page: <FilesPage />,
     },
     {
-        title: "Records",
+        title: "RecordsPage",
         path: "records",
         icon: <FontAwesomeIcon icon={faFileInvoiceDollar} />,
-        page: <Records />,
+        page: <RecordsPage />,
         secondary: true,
     },
     {
         title: "Orphan Exchanges",
         path: "exchanges-orphan",
         icon: <FontAwesomeIcon icon={faLinkSlash} />,
-        page: <ExchangesOrphanPage />,
+        page: <OrphanExchangesPage />,
         secondary: true,
     },
     {
         title: "Exchange Pairs",
         path: "exchanges-pairs",
         icon: <FontAwesomeIcon icon={faArrowsRotate} />,
-        page: <ExchangesPairedPage />,
+        page: <ExchangePairesPage />,
         secondary: true,
     },
     {

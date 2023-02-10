@@ -1,0 +1,25 @@
+gridFields:
+  Currency: The "Currency" field from the csv file.
+  Type: The "Type" field form the csv file, we only care about records of type "EXCHANGE".
+  Amount: The Amount field from the csv file.
+  Date: A shorter version of the "Start Date" from the csv file, without the time.
+  Fee: | 
+    The "Fee" field from the csv file. 
+    Caution in older statements the fee was in the cryptocurrency of the record, whereas in more recent statements the fee is in the "Base Currency",
+    Both are handled by the RevoGain App, but this can be confusing.
+  Balance: The "Balance" field from the csv file.
+  Files: The list of uploaded files that contained this record, if multiple statements include the same record there can be more than one file here.
+  Started Date: The "Started Date" field from the csv file.
+  Completed Date: |
+    The "Completed Date" field from the csv file.
+    For exchanges the "Completed Date" is always the same as the "Started Date", so the app only uses the "Start Date".
+  Description: The "Description" field from the csv file.
+  Product: The "Product" field from the csv file.
+  State: The "State" file from the csv file.
+  Id: Internal id of the record. This is not really used anywhere
+  Key: The internal key generated for that record.
+  Fiat Amount: The "Fiat Amount" field from the csv file. This field is only present in more recent statement files.
+  Fiat Amount (inc Fees): The "Fiat Amount (inc Fees)" field from the csv file. This field is only present in more recent statement files.
+  Base Currency: The "Base Currency" field from the csv file. This field is only present in more recent statement files.
+
+

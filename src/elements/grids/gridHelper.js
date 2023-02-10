@@ -1,4 +1,4 @@
-import {cleanDecimalString} from "../../../lib/formatHelper";
+import {cleanDecimalString} from "../../lib/formatHelper";
 
 /**
  * resizeGrid() will cause the automatic resizing of the columns visible on the grid

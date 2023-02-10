@@ -1,18 +1,26 @@
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faArrowsLeftRightToLine, faClose, faDownload, faGear} from "@fortawesome/free-solid-svg-icons";
+import {
+    faArrowsLeftRightToLine,
+    faCircleQuestion,
+    faClose,
+    faDownload,
+    faGear
+} from "@fortawesome/free-solid-svg-icons";
 import {useState} from "react";
 import GridColumnControl from "./GridColumnControl";
-import IconButton from "../../buttons/IconButton";
+import IconButton from "../buttons/IconButton";
 import GridDownloadControl from "./GridDownloadControl";
 import {resizeGrid} from "./gridHelper";
+import GridHelpDrawer from "./GridHelpDrawer";
 
 /**
  * Vertical bar on the right of the grid with icons to control the grid, and handle the drawers
  * @param gridRef {React.MutableRefObject} reference to the gird that is controlled
+ * @param gridHelpFile
  * @returns {JSX.Element}
  * @constructor
  */
-const GridControlBar = ({gridRef}) => {
+const GridControlBar = ({gridRef, gridHelpFile}) => {
     /**
      * @type {JSX.Element|null} drawer: drawer content to render or null is there is no drawer to render
      */
@@ -22,6 +30,11 @@ const GridControlBar = ({gridRef}) => {
         <div
             className="relative bg-blue-gray-700 flex flex-col gap-3 text-white px-1 py-3 w-9 items-center"
         >
+            <IconButton
+                onClick={() => setDrawer(old => old ? null : (<GridHelpDrawer gridHelpFile={gridHelpFile} />))}
+            >
+                <FontAwesomeIcon icon={faCircleQuestion} />
+            </IconButton>
             <IconButton
                 onClick={() => setDrawer(old => old ? null : (<GridColumnControl gridRef={gridRef} />))}
             >
@@ -44,8 +57,8 @@ const GridControlBar = ({gridRef}) => {
                         onClick={() => setDrawer(null)}
                     />
                     <div
-                        className=" w-60 bg-gradient-to-r from-blue-gray-200 to-blue-gray-100 h-full top-0 right-9
-                    px-3 py-5 border-l-2 border-gray-500 text-gray-800 overflow-y-auto"
+                        className="bg-gradient-to-r from-blue-gray-200 to-blue-gray-100 h-full top-0 right-9
+                    px-3 py-5 border-l-2 border-gray-500 text-gray-800 overflow-y-auto "
                     >
                         <div className="absolute">
                             <IconButton

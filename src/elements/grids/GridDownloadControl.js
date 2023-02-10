@@ -1,7 +1,7 @@
 import {useEffect, useMemo, useState} from "react";
 import {Button} from "@material-tailwind/react";
 import moment from "moment/moment";
-import {exportCsvFile} from "../../../lib/exportHelper";
+import {exportCsvFile} from "../../lib/exportHelper";
 
 /**
  * Renders the drawer that allows downloading as a CSV file the content of the grid
@@ -67,7 +67,7 @@ const GridDownloadControl = ({gridRef}) => {
     }
 
     return (
-        <div>
+        <div className="w-60">
             <h4
                 className="font-bold text-lg text-center text-gray-800 mb-5"
             >

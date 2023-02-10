@@ -1,10 +1,11 @@
 import {useFileContext} from "../../store/FilesContext";
 import {useEffect, useMemo, useRef, useState} from "react";
-import GridWithControl from "./parts/GridWithControl";
-import AlertErrors from "../alerts/AlertErrors";
-import DefaultButton from "../buttons/DefaultButton";
+import GridWithControl from "../../elements/grids/GridWithControl";
+import AlertErrors from "../../elements/alerts/AlertErrors";
+import DefaultButton from "../../elements/buttons/DefaultButton";
 import {getRecordByKey} from "../../store/dbRecords";
 import {setManualPair} from "../../store/dbManualPairs";
+import gridHelpFile from './orphansGridHelp.yml';
 
 /**
  * Renders the "Orphan Exchanges" grid
@@ -145,6 +146,7 @@ const OrphanExchangesGrid = () => {
                 rowSelection: 'multiple',
                 onRowSelected,
                 gridName: 'OrphanExchanges',
+                gridHelpFile,
             }}
             preGrid={(
                 <div className='p-3'>

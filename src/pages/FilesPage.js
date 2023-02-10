@@ -77,7 +77,7 @@ const FilesPage = () => {
                     currency: 'Currency',
                     dateFrom: 'From Date',
                     dateTo: 'To Date',
-                    count: 'Records / Exchanges',
+                    count: 'RecordsPage / Exchanges',
                 }}
                 actions={{
                     deleteFile: <FontAwesomeIcon icon={faTrash} />

@@ -1,0 +1,14 @@
+gridFields:
+  Pair: Checkboxes to select two records to pair together.
+  Started Date: The "Started Date" field from the csv file.
+  Currency: The "Currency" field from the csv file.
+  Amount: The "Amount" field from the csv file.
+  Balance: The "Balance" field from the csv file.
+  Description: The "Description" field from the csv file.
+  Files: The list of csv files that contain this record.
+  Type: The "Type" field from the csv file. (Always EXCHANGE)
+  Completed Date: The "Completed Date" field from the csv file.
+  Product: The "Product" field from the csv file.
+  State: The "State" field from the csv file.
+  Id: The internal id of the record.
+  Key: The internal key of the record.

@@ -1,8 +1,8 @@
 import {useEffect, useMemo, useState} from "react";
 import { useFileContext } from "../../store/FilesContext";
-import GridWithControl from "./parts/GridWithControl";
+import GridWithControl from "../../elements/grids/GridWithControl";
 import {getAllRecords} from "../../store/dbRecords";
-
+import gridHelpFile from './recordsGridHelp.yml';
 /**
  * Renders the "Record" Grid
  * @returns {JSX.Element}
@@ -67,7 +67,8 @@ const RecordsGrid = () => {
         <GridWithControl {...{
             rowData: records,
             columnDefs,
-            gridName: 'Records',
+            gridName: 'records',
+            gridHelpFile,
         }} />
     );
 }
