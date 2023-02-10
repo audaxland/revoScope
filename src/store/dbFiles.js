@@ -58,3 +58,12 @@ export const deleteFile = async fileId => {
         }
     });
 }
+
+/**
+ * Returns the total number or records in IndexDB
+ * This is used to detect new records added
+ * @returns {Promise<number>}
+ */
+export const countRecords = async () => {
+    return  await db.records.count();
+}

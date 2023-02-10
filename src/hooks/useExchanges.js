@@ -2,13 +2,6 @@ import {useCallback, useEffect, useState} from "react";
 import {computeExchanges} from "../lib/exchangesHelper";
 import {useSettingsContext} from "../store/SettingsContext";
 
-
-/**
- * For some reason the exchanges get computed twice, so use this boolean to avoid running the use effect the second time
- * @type {boolean}
- */
-let firstRender = true;
-
 /**
  * useExchanges maps the EXCHANGE records into the corresponding pairs
  * each pair is made of two record, one in the local currency (eg EUR) and the other in the cryptocurrency (eg BTC)
@@ -39,15 +32,6 @@ const useExchanges = () => {
         setPairs(newPairs);
         setOrphanExchanges(orphans);
     }, [referenceCurrency]);
-
-    // compute the Pair instances on first render
-    useEffect(() => {
-        // for some reason, this useEffect get ran twice, so manually prevent running update twice using firstRender
-        if (!firstRender) return;
-        updateExchanges();
-        firstRender = false;
-        // eslint-disable-next-line
-    }, []);
 
     return {
         updateExchanges,

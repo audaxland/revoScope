@@ -1,10 +1,11 @@
 import {useState} from "react";
-import AlertErrors from "../elements/alerts/AlertErrors";
+import AlertErrors from "../../elements/alerts/AlertErrors";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faFileCirclePlus, faTrash} from "@fortawesome/free-solid-svg-icons";
-import DataList from "../elements/lists/DataList";
-import BigFileButton from "../elements/buttons/BigFileButton";
-import useFiles from "../hooks/useFiles";
+import DataList from "../../elements/lists/DataList";
+import BigFileButton from "../../elements/buttons/BigFileButton";
+import useFiles from "../../hooks/useFiles";
+import DemoFilesSection from "./DemoFilesSection";
 
 /**
  * Renders the "Files" page
@@ -52,6 +53,7 @@ const FilesPage = () => {
         <div
             className="p-10"
         >
+            <DemoFilesSection />
             <BigFileButton
                 onChange={handleAddFile}
                 icon={(<FontAwesomeIcon icon={faFileCirclePlus}  />)}

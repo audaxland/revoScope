@@ -8,7 +8,7 @@ import {
     faHandHoldingDollar, faLinkSlash, faMoneyBillTransfer, faBookSkull, faSliders
 } from '@fortawesome/free-solid-svg-icons'
 import OverviewPage from "./pages/OverviewPage";
-import FilesPage from "./pages/FilesPage";
+import FilesPage from "./pages/files/FilesPage";
 import RecordsPage from "./pages/records/RecordsPage";
 import ExchangePairesPage from "./pages/exchangePairs/ExchangePairesPage";
 import OrphanExchangesPage from "./pages/orphanExchanges/OrphanExchangesPage";

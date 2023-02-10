@@ -24,11 +24,12 @@ export const FilesContext = createContext({
  */
 export const FilesContextProvider = ({children}) => {
     /**
-     * @type {{files: Object[], fileMap: Object}}
+     * @type {{files: Object[], fileMap: Object, nbRecords: number}}
      *          files: is the list of uploaded metadata read from IndexDB
      *          fileMap: is an object that maps the file ids to their corresponding file names
+     *          nbRecords: number of record contained in the data base
      */
-    const {files, fileMap} = useFiles();
+    const {files, fileMap, nbRecords} = useFiles();
 
     /**
      * @type {{updateExchanges: function, pairs: Pair[], orphanExchanges: string[]}}
@@ -44,6 +45,11 @@ export const FilesContextProvider = ({children}) => {
      *       updateAccounts: re-computes all the accounts based on the pairs available
      */
     const {accounts, updateAccounts} = useAccounts();
+
+    // re-compute the exchange pairs when the number of records in the database has changed
+    useEffect(() => {
+        if (nbRecords) updateExchanges();
+    }, [nbRecords])
 
     // update the accounts each time the pairs list has changed
     useEffect(() => {

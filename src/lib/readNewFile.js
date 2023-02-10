@@ -68,17 +68,42 @@ const getFileStatistics = rows => {
 export const readNewStatementFile = async newUpload => {
     const {lastModified, name, size, type} = newUpload;
 
-    if (name.slice(-4).toLowerCase() !== '.csv') {
-        throw new Error('Invalid File: ' + name + '. Only CSV files allowed.');
+    if (newUpload.name.slice(-4).toLowerCase() !== '.csv') {
+        throw new Error('Invalid File: ' + newUpload.name + '. Only CSV files allowed.');
     }
     // convert the file uploaded to a string
     const fileContent = await readFile(newUpload);
 
+    return await processNewStatementFile({fileContent, lastModified, name, size, type});
+}
+
+/**
+ * Reads a new csv file content and inserts the corresponding data in IndexDB
+ * A file can be uploaded either via the <input type="file" /> element or directly from the app (for the demo files)
+ * Processing is the same once we have the file content.
+ * @param fileContent {string} text content of the file
+ * @param lastModified {number} number to keep as last modification of the file
+ * @param name {string} name of the file
+ * @param size {string} size of the file
+ * @param type {string} here this should always be 'text/csv'
+ * @returns {Promise<{size: number, fileData: Object[], name: string, count: number, fileHash: string, lastModified: number, type: string}>}
+ */
+export const processNewStatementFile = async ({fileContent, lastModified, name, size, type}) => {
     // converts the csv file content string into an array of objects
     const csvContent = readCsvString(fileContent);
 
+    // if no rows where parsed, the file must not have been a csv file
+    if (!csvContent.length) {
+        throw new Error('Invalid File: ' + name + '. This does not seem to be a valid csv file');
+    }
+
     // generates general statistics about the data read
     const statistics = getFileStatistics(csvContent);
+
+    // if there is not "Start Date" then the csv file is not a statement file
+    if (!statistics.fromStartDate) {
+        throw new Error('Invalid File: ' + name + '. This file does not seem to be a revolut statement file.');
+    }
 
     // adds additional fields to the rows read, mostly the key and the hash that will be used later as index inside IndexDB
     const fileData = csvContent.map(row => {
@@ -111,4 +136,22 @@ export const readNewStatementFile = async newUpload => {
         count: fileData.length,
         fileData,
     };
+}
+
+/**
+ * Loads a csv file from a path
+ * this is used to load the demo files
+ * @param path {string} path to the file
+ * @param name {string} name of the file
+ * @returns {Promise<{size: number, fileData: Object[], name: string, count: number, fileHash: string, lastModified: number, type: string}>}
+ */
+export const readNewDemoStatementFile = async (path, name) => {
+    const lastModified = (new Date()).getTime();
+    const type = "text/csv";
+
+    // convert the file uploaded to a string
+    const fileContent = await fetch(path).then(res => res.text());
+    const size = fileContent.length;
+
+    return await processNewStatementFile({fileContent, lastModified, type, size, name});
 }
