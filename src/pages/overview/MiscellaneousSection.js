@@ -11,8 +11,8 @@ import {faTrash} from "@fortawesome/free-solid-svg-icons";
  */
 const MiscellaneousSection = () => {
     return (
-        <TitledBox title="MiscellaneousSection ">
-            <p>Other MiscellaneousSection information</p>
+        <TitledBox title="Miscellaneous ">
+            <p>Other Miscellaneous information</p>
             <ul className="text-sm">
                 <BulletLi>
                     This app is a Single Page Application, all your data is stored and computed on your browser.
