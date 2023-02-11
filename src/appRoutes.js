@@ -7,7 +7,7 @@ import {
     faPiggyBank,
     faHandHoldingDollar, faLinkSlash, faMoneyBillTransfer, faBookSkull, faSliders
 } from '@fortawesome/free-solid-svg-icons'
-import OverviewPage from "./pages/OverviewPage";
+import OverviewPage from "./pages/overview/OverviewPage";
 import FilesPage from "./pages/files/FilesPage";
 import RecordsPage from "./pages/records/RecordsPage";
 import ExchangePairesPage from "./pages/exchangePairs/ExchangePairesPage";
@@ -46,6 +46,7 @@ const appRoutes = [
         path: "settings",
         icon: <FontAwesomeIcon icon={faSliders} />,
         page: <SettingsPage />,
+        secondary: true,
     },
     {
         title: "Files",
@@ -54,7 +55,7 @@ const appRoutes = [
         page: <FilesPage />,
     },
     {
-        title: "RecordsPage",
+        title: "Records",
         path: "records",
         icon: <FontAwesomeIcon icon={faFileInvoiceDollar} />,
         page: <RecordsPage />,

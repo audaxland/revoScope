@@ -49,7 +49,7 @@ export const FilesContextProvider = ({children}) => {
     // re-compute the exchange pairs when the number of records in the database has changed
     useEffect(() => {
         if (nbRecords) updateExchanges();
-    }, [nbRecords])
+    }, [nbRecords, updateExchanges])
 
     // update the accounts each time the pairs list has changed
     useEffect(() => {
