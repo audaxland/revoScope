@@ -4,7 +4,7 @@ import Dexie from "dexie";
  * Dexie instance to access the IndexDB database
  * @type {Dexie}
  */
-export const db = new Dexie('revogains');
+export const db = new Dexie('revoscope');
 
 /**
  * Schema for the IndexDB database

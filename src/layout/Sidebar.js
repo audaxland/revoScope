@@ -34,7 +34,7 @@ const Sidebar = () => {
                     {(!!collapsed) && (<FontAwesomeIcon icon={faBars} />)}
                 </button>
                 {(!collapsed) && (
-                    <span className='flex-1'>RevoGains</span>
+                    <span className='flex-1'>RevoScope</span>
                 )}
             </h1>
             <nav className="p-1">

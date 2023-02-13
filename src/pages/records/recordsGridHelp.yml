@@ -6,7 +6,7 @@ gridFields:
   Fee: | 
     The "Fee" field from the csv file. 
     Caution in older statements the fee was in the cryptocurrency of the record, whereas in more recent statements the fee is in the "Base Currency",
-    Both are handled by the RevoGain App, but this can be confusing.
+    Both are handled by the RevoScope App, but this can be confusing.
   Balance: The "Balance" field from the csv file.
   Files: The list of uploaded files that contained this record, if multiple statements include the same record there can be more than one file here.
   Started Date: The "Started Date" field from the csv file.

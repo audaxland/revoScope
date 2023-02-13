@@ -31,11 +31,11 @@ const UsageSection = () => {
                         using a date range that includes all the transactions you have ever had on that account
                     </BulletLi>
                     <BulletLi>
-                        On the RevoGains app, go to the <BlueLink to='/settings'>"Settings" page </BlueLink>
+                        On the RevoScope app, go to the <BlueLink to='/settings'>"Settings" page </BlueLink>
                         to set your "local" fiat currency (the currency you used to buy/sell the crypto assets)
                     </BulletLi>
                     <BulletLi>
-                        On the RevoGains app, go to the <BlueLink to='/files'>"Files" page </BlueLink>
+                        On the RevoScope app, go to the <BlueLink to='/files'>"Files" page </BlueLink>
                         and there upload all your statements from the revolut app
                     </BulletLi>
                     <BulletLi>

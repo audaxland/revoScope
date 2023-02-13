@@ -8,9 +8,9 @@ import BlueLink from "../../elements/buttons/BlueLink";
  */
 const WelcomeSection = () => {
     return (
-        <TitledBox title="Welcome to the RevoGains app">
+        <TitledBox title="Welcome to the RevoScope app">
             <p>
-                The RevoGains app is built to calculate the capital gains (or losses) on crypto currency trades
+                The RevoScope app is built to calculate the capital gains (or losses) on crypto currency trades
                 made inside the Revolut&trade; app. And provide the corresponding Form 849 tax forms for filing the us taxes.
             </p>
             <p>

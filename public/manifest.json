@@ -3,17 +3,17 @@
   "name": "Create React App Sample",
   "icons": [
     {
-      "src": "revogains.ico",
+      "src": "revoscope.ico",
       "sizes": "64x64 32x32 24x24 16x16",
       "type": "image/x-icon"
     },
     {
-      "src": "revogains192.png",
+      "src": "revoscope192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "revogains512.png",
+      "src": "revoscope512.png",
       "type": "image/png",
       "sizes": "512x512"
     }

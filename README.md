@@ -1,10 +1,10 @@
-# RevoGains
+# RevoScope
 
-RevoGains is a ReactJs app that calculates capital gains/losses on cryptocurrency transactions
+RevoScope is a ReactJs app that calculates capital gains/losses on cryptocurrency transactions
 made using the Revolut&trade; app/platform. And generates the corresponding Form 8949 tax forms.
 
 The app uses the csv statements of the accounts that the user must first download from 
-their Revolut&trade; accounts. The user must then upload those statements on the RevoGain app
+their Revolut&trade; accounts. The user must then upload those statements on the RevoScope app
 and the rest is computed based on those statement csv files.
 
 The app is a standalone SPA app, and does not use a backend, 
@@ -13,12 +13,12 @@ nor shared outside the browser.
 
 ## Screenshot
 
-![RevoGains App Screenshot](./screenshot.png)
+![RevoScope App Screenshot](./screenshot.png)
 
 ## Live Instance
 
 If you just want to see the live app, 
-a live version of the app can be found at https://revogains.audaxland.net
+a live version of the app can be found at https://www.revoscope.com
 
 ## Technologies used
 
@@ -41,8 +41,8 @@ The app is built using the following technologies:
 If you which to install the app locally, you can run the following commands
 
 ```bash
-git clone https://github.com/audaxland/revoGains.git
-cd revoGains
+git clone https://github.com/audaxland/revoScope.git
+cd revoScope
 npm install
 npm start
 ```

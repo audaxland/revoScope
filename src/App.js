@@ -3,7 +3,7 @@ import AppLayout from "./layout/AppLayout";
 import appRoutes from "./appRoutes";
 
 /**
- * The RevoGain App root component
+ * The RevoScope App root component
  * @returns {JSX.Element}
  * @constructor
  */

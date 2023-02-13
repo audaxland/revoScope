@@ -60,7 +60,7 @@ const GridDownloadControl = ({gridRef}) => {
         /**
          * @type {string} filename: generate a default filename the browser will suggest for the file download
          */
-        const filename = (gridRef?.current?.props?.girdName ?? 'RevoGainsExport') + '_' + (moment().format('YYYY-MM-DD_HH-mm-ss')) + '.csv';
+        const filename = (gridRef?.current?.props?.girdName ?? 'RevoScopeExport') + '_' + (moment().format('YYYY-MM-DD_HH-mm-ss')) + '.csv';
 
         // generate the file and trigger the download
         exportCsvFile({exportData, filename});
