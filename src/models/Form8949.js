@@ -83,7 +83,7 @@ class Form8949
      * @param partIICheckbox {string} which checkbox to use for the second part of the form
      * @returns {Promise<PDFDocument>}
      */
-    async generateTaxFormPdfDoc({offset = 0, partICheckbox = 'A', partIICheckbox = 'D'}) {
+    async generateTaxFormPdfDoc({offset = 0, partICheckbox = 'C', partIICheckbox = 'F'}) {
 
         // get the data to render on this page of the form
         const partIRows = this.taxDataByCheckbox[partICheckbox]?.slice(offset, offset + 14) ?? [];
