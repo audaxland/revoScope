@@ -3,14 +3,20 @@ import useYaml from "../../hooks/useYaml";
 /**
  * Renders the columns definition helper drawer on grid pages.
  * @param gridHelpFile {string} The path the yaml file that contains the column definitions text.
+ * @param gridHelpObject {Object} Alternately to the yaml file, an object that contains the column definitions text.
  * @returns {JSX.Element}
  * @constructor
  */
-const GridHelpDrawer = ({gridHelpFile}) => {
+const GridHelpDrawer = ({gridHelpFile, gridHelpObject}) => {
+    /**
+     * @type {Object} yaml help file converted to an object
+     */
+    const yamlHelp = useYaml(gridHelpFile);
+
     /**
      * @type {{gridFields: Object}} list of {<field name>: <field definition>,...} definitions of the columns.
      */
-    const {gridFields} = useYaml(gridHelpFile)
+    const {gridFields} =  gridHelpObject ?? yamlHelp;
 
     return (
         <div className="w-96">

@@ -16,11 +16,12 @@ import GridHelpDrawer from "./GridHelpDrawer";
 /**
  * Vertical bar on the right of the grid with icons to control the grid, and handle the drawers
  * @param gridRef {React.MutableRefObject} reference to the gird that is controlled
- * @param gridHelpFile
+ * @param gridHelpFile {string} url to the yaml file that contains the fields help drawer data
+ * @param gridHelpObject {object} alternatively to the yaml file, the fields help drawer data can be provided as an object
  * @returns {JSX.Element}
  * @constructor
  */
-const GridControlBar = ({gridRef, gridHelpFile}) => {
+const GridControlBar = ({gridRef, gridHelpFile, gridHelpObject}) => {
     /**
      * @type {JSX.Element|null} drawer: drawer content to render or null is there is no drawer to render
      */
@@ -31,7 +32,7 @@ const GridControlBar = ({gridRef, gridHelpFile}) => {
             className="relative bg-blue-gray-700 flex flex-col gap-3 text-white px-1 py-3 w-9 items-center"
         >
             <IconButton
-                onClick={() => setDrawer(old => old ? null : (<GridHelpDrawer gridHelpFile={gridHelpFile} />))}
+                onClick={() => setDrawer(old => old ? null : (<GridHelpDrawer gridHelpFile={gridHelpFile} gridHelpObject={gridHelpObject} />))}
             >
                 <FontAwesomeIcon icon={faCircleQuestion} />
             </IconButton>

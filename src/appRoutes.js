@@ -5,7 +5,7 @@ import {
     faFileInvoiceDollar,
     faArrowsRotate,
     faPiggyBank,
-    faHandHoldingDollar, faLinkSlash, faMoneyBillTransfer, faBookSkull, faSliders
+    faHandHoldingDollar, faLinkSlash, faMoneyBillTransfer, faBookSkull, faSliders, faBalanceScale
 } from '@fortawesome/free-solid-svg-icons'
 import OverviewPage from "./pages/overview/OverviewPage";
 import FilesPage from "./pages/files/FilesPage";
@@ -17,6 +17,7 @@ import GainsPage from "./pages/gains/GainsPage";
 import TransactionsPage from "./pages/transactions/TransactionsPage";
 import Form8949Page from "./pages/Form8949Page";
 import SettingsPage from "./pages/SettingsPage";
+import BalancesPage from "./pages/balances/BalancesPage";
 
 /**
  * list of routes and their corresponding details
@@ -93,6 +94,13 @@ const appRoutes = [
         path: "sales-gains",
         icon: <FontAwesomeIcon icon={faHandHoldingDollar} />,
         page: <GainsPage />,
+        secondary: true,
+    },
+    {
+        title: "Balances",
+        path: "balances",
+        icon: <FontAwesomeIcon icon={faBalanceScale} />,
+        page: <BalancesPage />,
         secondary: true,
     },
     {

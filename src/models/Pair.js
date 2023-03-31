@@ -50,6 +50,11 @@ class Pair
         this.dateTime = cryptoRecord['Started Date'];
 
         /**
+         * @type {number} timestamp of the record start date, as unix time
+         */
+        this.time = cryptoRecord.date.getTime();
+
+        /**
          * @type {number} year of the transaction
          */
         this.year = Number(this.dateTime.substring(0, 4));

@@ -48,6 +48,17 @@ class Account
          * @type {number} total amount of the cryptocurrency sold
          */
         this.sold = 0.0;
+
+        /**
+         * List of exchange rates calculates at each transaction
+         * @type {{time: number, dateTime: string, rateToLocal: number, rateToCrypto: number}[]}
+         */
+        this.rates = [];
+
+        /**
+         * @type {boolean} a flag to track if the this.rates array is sorted or not
+         */
+        this.ratesSorted = false;
     }
 
     /**
@@ -55,6 +66,11 @@ class Account
      * @param pair {Pair} Pair instance to add
      */
     addPair(pair) {
+        // add the pair exchange rate to the list of rates
+        const {time, dateTime, rateToLocal, rateToCrypto} = pair;
+        this.rates.push({time, dateTime, rateToLocal, rateToCrypto});
+        this.ratesSorted = false;
+
         // if the pair is a purchase
         if (pair.cryptoAmount > 0) {
             const purchase = new Purchase(pair);
@@ -318,6 +334,43 @@ class Account
             }
         })
         return salesList;
+    }
+
+    /**
+     * Get the last or closest exchange rate that applies for a given timestamp
+     * using a recursive dichotomy search
+     * @param time: {int} micro-timstamp to search for
+     * @param start: {int} smallest index to search in the rates array list
+     * @param end: {int} biggest index to search in the rates array list
+     * @returns {{time: number, dateTime: string, rateToLocal: number, rateToCrypto: number}}
+     */
+    getRateRecursive(time, start, end) {
+        if (!this.ratesSorted) {
+            this.rates = this.rates.sort((a,b) => a.time > b.time ? 1 : (a.time < b.time ? -1 : 0));
+            this.ratesSorted = true;
+            return this.getRateRecursive(time, 0, this.rates.length - 1);
+        }
+        if ((this.rates[end].time <= time) ) {
+            return this.rates[start];
+        }
+        if ((this.rates[start].time >= time) || (start === end) || (start + 1 === end)) {
+            return this.rates[start];
+        }
+
+        const nextIndex = start + Math.floor((end - start)/2);
+        return (this.rates[nextIndex].time > time)
+            ? this.getRateRecursive(time, start, nextIndex)
+            : this.getRateRecursive(time,  nextIndex, end);
+    }
+
+    /**
+     * Get the last or closest exchange rate of a given time in the format 'YYYY-MM-DD HH:MM:SS'
+     * @param dateTime {string} time in the format 'YYYY-MM-DD HH:MM:SS'
+     * @returns {{time: number, dateTime: string, rateToLocal: number, rateToCrypto: number}}
+     */
+    getRate(dateTime) {
+        const time = (new Date(dateTime)).getTime();
+        return this.getRateRecursive(time, 0, this.rates.length - 1);
     }
 }
 
