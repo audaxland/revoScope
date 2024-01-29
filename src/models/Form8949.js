@@ -3,18 +3,20 @@ import f8949_2019 from '../assets/form8949/f8949_2019.pdf';
 import f8949_2020 from '../assets/form8949/f8949_2020.pdf';
 import f8949_2021 from '../assets/form8949/f8949_2021.pdf';
 import f8949_2022 from '../assets/form8949/f8949_2022.pdf';
+import f8949_2023 from '../assets/form8949/f8949_2023.pdf';
 import moment from "moment";
 import {formatNumberWithParenthesis} from "../lib/formatHelper";
 
 /**
  * pdf files for each tax year, that is the original form that will be populated by the app
- * @type {{"2019": *, "2022": *, "2021": *, "2020": *}}
+ * @type {{"2019": *, "2022": *, "2021": *, "2020": *, "2023": *}}
  */
 const yearForms = {
     2019: f8949_2019,
     2020: f8949_2020,
     2021: f8949_2021,
     2022: f8949_2022,
+    2023: f8949_2023,
 }
 
 /**
