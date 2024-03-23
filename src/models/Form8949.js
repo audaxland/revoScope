@@ -38,6 +38,7 @@ class Form8949
             if (!this.taxDataByCheckbox[row.checkbox]) throw new Error('Unknown checkbox value: ' + row.checkbox);
             this.taxDataByCheckbox[row.checkbox].push({...row});
         });
+
         taxData.partII.forEach(row => {
             if (!this.taxDataByCheckbox[row.checkbox]) throw new Error('Unknown checkbox value: ' + row.checkbox);
             this.taxDataByCheckbox[row.checkbox].push({...row});

@@ -139,6 +139,7 @@ const Form8949Page = () => {
             });
         });
         shortTerm.sort((a, b) => a.soldDate > b.soldDate ? 1 : (a.soldDate < b.soldDate ? -1 : 0));
+        longTerm.sort((a, b) => a.soldDate > b.soldDate ? 1 : (a.soldDate < b.soldDate ? -1 : 0));
         setSalesData({shortTerm, longTerm});
     }, [accounts, taxYear]);
 
@@ -321,7 +322,7 @@ const Form8949Page = () => {
                 </FlexWrapSection>
 
                 <FlexWrapSection title='Form 8949 PDF - Part I/Short Term Pages'>
-                    {[...Array((Math.floor(taxData.partI.length/14) + 1))].map((_,p) => (
+                    {[...Array(Math.max(Math.ceil(taxData.partI.length/14), 1))].map((_,p) => (
                         <Button
                             size="sm"
                             className="min-w-[9em]"
@@ -334,7 +335,7 @@ const Form8949Page = () => {
                 </FlexWrapSection>
 
                 <FlexWrapSection title='Form 8949 PDF - Part II/Long Term Pages'>
-                    {[...Array((Math.floor(taxData.partII.length/14) + 1))].map((_,p) => (
+                    {[...Array(Math.max(Math.ceil(taxData.partII.length/14), 1))].map((_,p) => (
                         <Button
                             size="sm"
                             className="min-w-[9em]"
