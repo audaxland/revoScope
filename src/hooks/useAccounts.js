@@ -1,6 +1,7 @@
 import {useCallback, useState} from "react";
 import Account from "../models/Account";
-import {Pair} from "yaml";
+import Pair from "../models/Pair";
+import Withdrawal from "../models/Withdrawal";
 
 /**
  * Handles the state of the Account instances
@@ -37,8 +38,8 @@ const useAccounts = () => {
             }
 
             // add the pair to its corresponding Account
-            if (item.constructor.name === 'Pair') newAccounts[item.currency].addPair(item);
-            if (item.constructor.name === 'Withdrawal') newAccounts[item.currency].addWithdrawal(item);
+            if (item instanceof Pair) newAccounts[item.currency].addPair(item);
+            if (item instanceof Withdrawal) newAccounts[item.currency].addWithdrawal(item);
         });
 
         setAccounts(newAccounts);

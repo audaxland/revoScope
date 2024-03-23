@@ -57,13 +57,13 @@ export const FilesContextProvider = ({children}) => {
     useEffect(() => {
         if (nbRecords) {
             (async () => {
-                const {newPairs, orphans} = await updateExchanges();
+                const {newPairs} = await updateExchanges();
                 const newWithdrawals = await updateWithdrawals();
                 // update the accounts each time the pairs list has changed
                 updateAccounts({pairs: newPairs, withdrawals: newWithdrawals});
             })()
         }
-    }, [nbRecords, updateExchanges, updateAccounts])
+    }, [nbRecords, updateExchanges, updateAccounts, updateWithdrawals])
 
 
     return (

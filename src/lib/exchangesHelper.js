@@ -100,6 +100,9 @@ export const computeExchanges = async ({referenceCurrency}) => {
     for (const pairId of  Object.keys(manualPairs)) {
         if (manualPairs[pairId].length < 2 ) {
             // this case shouldn't happen normally, but can occur if there was an error while deleting a file
+            if (!allExchanges[manualPairs[pairId][0]['Started Date']]) {
+                allExchanges[manualPairs[pairId][0]['Started Date']] = [];
+            }
             allExchanges[manualPairs[pairId][0]['Started Date']].push(manualPairs[pairId][0]);
             await deleteManualPairById(pairId);
         } else {

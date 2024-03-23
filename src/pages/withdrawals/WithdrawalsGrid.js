@@ -14,7 +14,7 @@ const WithdrawalsGrid = () => {
     /**
      * @type {{fileMap: Object}} the map of file ids to their corresponding file name
      */
-    const {fileMap, accounts} = useFileContext();
+    const {accounts} = useFileContext();
 
     /**
      * @type {[Object[], function]} rowData : the list of withdrawals to render in the grid
@@ -99,7 +99,7 @@ const WithdrawalsGrid = () => {
             {field: 'purchaseItemFor', valueGetter: ({data}) => data.purchaseItemFor?.toFixed(2)},
             {field: 'purchaseItemFeeValue', valueGetter: ({data}) => data.purchaseItemFeeValue?.toFixed(2)},
         ] : [])
-    ], [fileMap, withPurchases]);
+    ], [withPurchases, cellStyle, rowSpan]);
 
     return (
         <GridWithControl
