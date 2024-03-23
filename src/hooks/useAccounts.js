@@ -1,5 +1,6 @@
 import {useCallback, useState} from "react";
 import Account from "../models/Account";
+import {Pair} from "yaml";
 
 /**
  * Handles the state of the Account instances
@@ -13,20 +14,31 @@ const useAccounts = () => {
     const [accounts, setAccounts] = useState({});
 
     /**
+     * Sort function so sort pairs by date (the key starts with the data, and handles sorting records that have the same date and time)
+     * @param a {object}
+     * @param b {object}
+     * @returns {number}
+     */
+    const cryptoKeySort = (a,b) => a.cryptoKey > b.cryptoKey ? 1 : (a.cryptoKey < b.cryptoKey ? -1 : 0);
+
+    /**
      * @type {(function(Pair[]): void)} re-compute the accounts for the given pairs
      */
-    const updateAccounts = useCallback(pairs => {
+    const updateAccounts = useCallback(({pairs, withdrawals}) => {
         const newAccounts = {};
 
-        pairs.forEach(pair => {
-            const {currency, referenceCurrency} = pair;
+        const items = [...pairs, ...withdrawals].sort(cryptoKeySort);
+
+        items.forEach(item => {
+            const {currency, referenceCurrency} = item;
             // if the Account for the pair currency does not yet exits, create it first
             if (!newAccounts[currency]) {
-                newAccounts[pair.currency] = new Account({currency, referenceCurrency})
+                newAccounts[item.currency] = new Account({currency, referenceCurrency})
             }
 
             // add the pair to its corresponding Account
-            newAccounts[pair.currency].addPair(pair);
+            if (item.constructor.name === 'Pair') newAccounts[item.currency].addPair(item);
+            if (item.constructor.name === 'Withdrawal') newAccounts[item.currency].addWithdrawal(item);
         });
 
         setAccounts(newAccounts);

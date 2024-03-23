@@ -2,6 +2,7 @@ import {createContext, useContext, useEffect} from "react";
 import useExchanges from "../hooks/useExchanges";
 import useFiles from "../hooks/useFiles";
 import useAccounts from "../hooks/useAccounts";
+import useWithdrawals from "../hooks/useWithdrawals";
 
 /**
  * The FilesContext contains all the data that is read and computed from the csv files
@@ -40,6 +41,12 @@ export const FilesContextProvider = ({children}) => {
     const {updateExchanges, pairs, orphanExchanges} = useExchanges();
 
     /**
+     * @type {{updateWithdrawals : function}}
+     *       updateWithdrawals : re-computes all the records from IndexDB to wind all withdrawals
+     */
+    const {updateWithdrawals} = useWithdrawals();
+
+    /**
      * @type {{accounts: Object, updateAccounts: function}}
      *       accounts: contains all the Account instances using their currency as the object key
      *       updateAccounts: re-computes all the accounts based on the pairs available
@@ -48,13 +55,16 @@ export const FilesContextProvider = ({children}) => {
 
     // re-compute the exchange pairs when the number of records in the database has changed
     useEffect(() => {
-        if (nbRecords) updateExchanges();
-    }, [nbRecords, updateExchanges])
+        if (nbRecords) {
+            (async () => {
+                const {newPairs, orphans} = await updateExchanges();
+                const newWithdrawals = await updateWithdrawals();
+                // update the accounts each time the pairs list has changed
+                updateAccounts({pairs: newPairs, withdrawals: newWithdrawals});
+            })()
+        }
+    }, [nbRecords, updateExchanges, updateAccounts])
 
-    // update the accounts each time the pairs list has changed
-    useEffect(() => {
-        updateAccounts(pairs);
-    }, [pairs, updateAccounts]);
 
     return (
         <FilesContext.Provider

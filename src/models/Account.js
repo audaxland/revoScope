@@ -35,6 +35,11 @@ class Account
         this.sales = [];
 
         /**
+         * @type {Withdrawal[]} list of all the withdrawals of this cryptocurrency
+         */
+        this.withdrawals = [];
+
+        /**
          * @type {number} index of the oldest purchase that has not yet been sold
          */
         this.cursor = 0;
@@ -48,6 +53,11 @@ class Account
          * @type {number} total amount of the cryptocurrency sold
          */
         this.sold = 0.0;
+
+        /**
+         * @type {number} total amount of the cryptocurrency withdrawn
+         */
+        this.withdrawn = 0.0;
 
         /**
          * List of exchange rates calculates at each transaction
@@ -75,7 +85,7 @@ class Account
         if (pair.cryptoAmount > 0) {
             const purchase = new Purchase(pair);
             this.purchased += purchase.purchased;
-            purchase.balanceToDate = this.purchased - this.sold ;
+            purchase.balanceToDate = this.purchased - this.sold - this.withdrawn;
             this.purchases.push(purchase);
         }
 
@@ -97,9 +107,34 @@ class Account
                 // in which case it is an error, and the user must figure out what statement files are missing
                 sale.error = saleError?.message ?? saleError;
             }
-            sale.balanceToDate = this.purchased - this.sold ;
+            sale.balanceToDate = this.purchased - this.sold  - this.withdrawn;
             this.sales.push(sale);
         }
+    }
+
+    /**
+     * Add a new Withdrawal to the account
+     * @param withdrawal {Withdrawal} Withdrawal instance to add
+     */
+    addWithdrawal(withdrawal) {
+        try {
+            // for sales, the crypto amount excludes the fee, so the fee must be added
+            const {purchases, cursor} = this.matchSaleToPurchases(Math.abs(withdrawal.cryptoAmount) + withdrawal.cryptoFee);
+            withdrawal.setPurchases(purchases);
+            purchases.forEach(purchase => {
+                this.purchases[purchase.purchaseId].remaining = purchase.remainingAfter;
+            });
+            this.cursor = cursor;
+            // for sales, the fee is excluded from the amount
+            this.withdrawn += Math.abs(withdrawal.cryptoAmount);
+        } catch (withdrawalError) {
+            // if there are missing transactions in the app, it is possible that a withdrawal would not have any corresponding purchase
+            // in which case it is an error, and the user must figure out what statement files are missing
+            withdrawal.error = withdrawalError?.message ?? withdrawalError;
+        }
+        withdrawal.balanceToDate = this.purchased - this.sold - this.withdrawn;
+        this.withdrawals.push(withdrawal);
+
     }
 
     /**
@@ -337,11 +372,47 @@ class Account
     }
 
     /**
+     * Generate the list of withdrawals, with or without the corresponding purchases
+     * @param withPurchases {boolean} if set to true, the output will include a row per purchase, if false, only the withdrawals are returned
+     * @returns {*[]}
+     */
+    listWithdrawals(withPurchases = true) {
+        const withdrawalsList = [];
+
+        this.withdrawals.forEach((withdrawal, id) => {
+            const withdrawalDetails = {
+                id,
+                ...withdrawal.details(),
+                purchases: withdrawal.purchases.length,
+                purchaseDates: [...withdrawal.purchases.reduce((prev, {date}) => prev.add(date), new Set())],
+            }
+            // if we are including the purchases, we generate a row per purchase, all rows contain the dales data
+            if (withPurchases) {
+                withdrawal.purchases.forEach(({purchaseId, amount, localAmount, feeValue}, purchaseIndex) => {
+                    const purchase = this.purchases[purchaseId];
+                    withdrawalsList.push({
+                        ...withdrawalDetails,
+                        purchaseIndex,
+                        purchaseItemDateTime: purchase.pair.dateTime,
+                        purchaseItemAmount: amount,
+                        purchaseItemFor: Math.abs(localAmount),
+                        purchaseItemFeeValue: feeValue,
+                    });
+                });
+            } else {
+                withdrawalsList.push(withdrawalDetails);
+            }
+        })
+        return withdrawalsList;
+    }
+
+
+    /**
      * Get the last or closest exchange rate that applies for a given timestamp
      * using a recursive dichotomy search
-     * @param time: {int} micro-timstamp to search for
-     * @param start: {int} smallest index to search in the rates array list
-     * @param end: {int} biggest index to search in the rates array list
+     * @param time : {int} micro-timstamp to search for
+     * @param start : {int} smallest index to search in the rates array list
+     * @param end : {int} biggest index to search in the rates array list
      * @returns {{time: number, dateTime: string, rateToLocal: number, rateToCrypto: number}}
      */
     getRateRecursive(time, start, end) {

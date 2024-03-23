@@ -1,0 +1,28 @@
+gridFields:
+  Id: Internal Id of the withdrawal.
+  Year: Withdrawal year.
+  Date: Date of the withdrawal.
+  Date Time: Date and time of the withdrawal.
+  Currency: Currency of the cryptocurrency asset withdrawn.
+  Amount: Value of the "Amount" field in the record of the withdrawal in the csv statement file of the cryptocurrency.
+  Balance To Date: |
+    Balance of the cryptocurrency tracked internally by comparing the sum of all purchases and the sum of all sales and withdrawals.
+    Note: If this amount does not match the amount in the "Crypto Balance" this means that there are missing transactions in the app.
+    This can happen if the statement files do not cover the entire period that you have bought/sold the cryptocurrency, or if some records pairs have not been matched. 
+    Check the "Orphan Exchanges" page to match record pairs that are not matched, or check your statement files to find the missing records.
+  Fiat Value: Fiat value of the amount of cryptocurrency withdrawn.
+  Fiat Currency: Fiat currency used for the Fiat Value field.
+  Total Cost: Cost in the local currency of the purchase including the purchase fees and the withdrawal fees.
+  Cost: Cost in the local currency of the purchase, excluding all fees.
+  Purchase Fee Value: Fee in the local currency of the fees paid to purchase the assets.
+  Withdrawal Fee Value: Fee in the local currency of the fee paid to withdraw the assets.
+  Gain: Amount in the local currency gained or lost when withdrawing the assets.
+  Rate To Crypto: Conversion rate used for the withdrawal fiat value, from the fiat currency to the cryptocurrency currency.
+  Rate To Local: Conversion rate used for the withdrawal fiat value, from the cryptocurrency currency to the fiat currency.
+  Type: Either "sale" for a normal sale or "invalid sale" for sales that the app could not map the their purchase
+  Purchases: Number of purchases corresponding to this sale.
+  Purchase Dates: Date or list of dates of the purchase(s).
+  Purchase Item Date Time: Date and time of a purchase.
+  Purchase Item Amount: Amount in the cryptocurrency, of the purchase that was imputed to the sale.
+  Purchase Item For: Amount of the local currency that was paid to purchase the cryptocurrency amount imputed to the sale.
+  Purchase Item Fee Value: Amount of fee in the local currency that was paid to purchase the cryptocurrency amount imputed to the sale.

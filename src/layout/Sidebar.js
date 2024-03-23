@@ -24,7 +24,7 @@ const Sidebar = () => {
 
     return (
         <aside
-            className={`${collapsed ? 'w-14 ' : 'w-60 '} bg-gradient-to-r from-purple-700 to-blue-600 transition-all duration-300`}
+            className={`${collapsed ? 'w-14 ' : 'w-60 '} bg-gradient-to-r from-purple-700 to-blue-600 transition-all duration-300 max-h-screen overflow-scroll`}
         >
             <h1
                 className="text-white font-extrabold text-3xl text-center p-3 flex flex-row gap-3 items-center justify-center"

@@ -31,6 +31,7 @@ const useExchanges = () => {
         const {pairs: newPairs, orphans} = await computeExchanges({referenceCurrency});
         setPairs(newPairs);
         setOrphanExchanges(orphans);
+        return {newPairs, orphans};
     }, [referenceCurrency]);
 
     return {

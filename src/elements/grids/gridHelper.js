@@ -23,4 +23,4 @@ export const resizeGrid = columnApi => {
  * @param field
  * @returns {function({data: *}): *}
  */
-export const cleanDecimal = field => ({data}) => cleanDecimalString(data[field])
+export const cleanDecimal = field => ({data}) => cleanDecimalString(data[field] ?? 0.0)

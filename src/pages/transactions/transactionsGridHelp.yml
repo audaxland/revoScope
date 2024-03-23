@@ -10,7 +10,7 @@ gridFields:
   Local Currency: Currency of the local or base currency.
   Crypto Balance: Balance of the cryptocurrency account read from the csv statement file of the cryptocurrency.
   Balance To Date: |
-    Balance of the cryptocurrency tracked internally by comparing the sum of all purchases and the sum of all sales.
+    Balance of the cryptocurrency tracked internally by comparing the sum of all purchases and the sum of all sales and withdrawals.
     Note: If this amount does not match the amount in the "Crypto Balance" this means that there are missing transactions in the app.
     This can happen if the statement files do not cover the entire period that you have bought/sold the cryptocurrency, or if some records pairs have not been matched. 
     Check the "Orphan Exchanges" page to match record pairs that are not matched, or check your statement files to find the missing records.
