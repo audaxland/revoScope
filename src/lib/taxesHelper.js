@@ -114,11 +114,13 @@ export const getAllSalesTotals = ({shortTerm = [], longTerm = [], exchangeRate =
 export const formatTaxData = ({shortTerm, longTerm, ...rest}) => ({
     partI: formatTaxPart({
         data: shortTerm,
+        part: 'Part I',
         checkbox: 'C',
         ...rest
     }),
     partII: formatTaxPart({
         data: longTerm,
+        part: 'Part II',
         checkbox: 'F',
         ...rest
     }),
