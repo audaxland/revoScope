@@ -18,7 +18,7 @@ nor shared outside the browser.
 ## Live Instance
 
 If you just want to see the live app, 
-a live version of the app can be found at https://www.revoscope.com
+a live version of the app can be found at https://revoscope.audaxland.net/
 
 ## Technologies used
 

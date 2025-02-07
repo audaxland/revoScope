@@ -25,7 +25,7 @@ const Form8949Page = () => {
     /**
      * @type {[string, function]} taxYear: tax year selected in the top drowdown of th epage
      */
-    const [taxYear, setTaxYear] = useState('2023');
+    const [taxYear, setTaxYear] = useState('2024');
 
     /**
      * @type {[number, function]} exchangeRate: the exchange rate to apply to convert the local currency to USD
@@ -195,7 +195,7 @@ const Form8949Page = () => {
                     <div className='w-60'>
                         <DropDown
                             label="Tax Year"
-                            options={['2023', '2022', '2021', '2020', '2019']}
+                            options={['2024', '2023', '2022', '2021', '2020', '2019']}
                             value={taxYear}
                             onChange={setTaxYear}
                         />
