@@ -7,6 +7,7 @@ import f8949_2023 from '../assets/form8949/f8949_2023.pdf';
 import f8949_2024 from '../assets/form8949/f8949_2024.pdf';
 import moment from "moment";
 import {formatNumberWithParenthesis} from "../lib/formatHelper";
+import {exportCsvFile} from "../lib/exportHelper";
 
 /**
  * pdf files for each tax year, that is the original form that will be populated by the app
@@ -22,34 +23,50 @@ const yearForms = {
 }
 
 /**
+ * @type {string[]} List of years for which the app can generate a form 8949
+ */
+export const availableYears = Object.keys(yearForms).map(y => `${y}`).reverse()
+
+/**
  * A Form 8949 tax form pbf, that we populate with the sales data
  */
 class Form8949
 {
     /**
      * @param year {string|Number} the tax year of the form
-     * @param taxData {{partI: Object[], partII: Object[]}} the prepared data to populate on the form
      * @param name {string} value to populate in the "name" field on the form
      * @param ssn {string} value to populate in the "ssn" field on the form
      */
-    constructor({year, taxData, name, ssn}) {
+    constructor({year, name, ssn}) {
         this.year = year;
         this.taxDataByCheckbox = {A: [], B: [], C: [], D: [], E: [], F: []};
-        // as we need to have one form per checkbox that applies, we group the data by checkbox
-        taxData.partI.forEach(row => {
-            if (!this.taxDataByCheckbox[row.checkbox]) throw new Error('Unknown checkbox value: ' + row.checkbox);
-            this.taxDataByCheckbox[row.checkbox].push({...row});
-        });
-
-        taxData.partII.forEach(row => {
-            if (!this.taxDataByCheckbox[row.checkbox]) throw new Error('Unknown checkbox value: ' + row.checkbox);
-            this.taxDataByCheckbox[row.checkbox].push({...row});
-        });
         this.name = name;
         this.ssn = ssn;
         if (!yearForms[year]) {
             throw new Error('No tax form available for year: ' + year);
         }
+    }
+
+    /**
+     * Add a list of records to be rendered in the generated form 8949 files
+     * @param data {Object[]} list of records
+     * @returns {Form8949}
+     */
+    addData(data) {
+        const checkboxes = new Set()
+        // only process the data if all records have a valid checkbox field
+        data.forEach(row => {
+            if (!this.taxDataByCheckbox[row.checkbox]) throw new Error('Unknown checkbox value: ' + row.checkbox);
+            checkboxes.add(row.checkbox);
+        });
+        data.forEach(row => {
+            this.taxDataByCheckbox[row.checkbox].push({...row});
+        });
+        // sort by sale date
+        checkboxes.forEach(k => {
+            this.taxDataByCheckbox[k] = this.taxDataByCheckbox[k].sort((a, b) => a.c.localeCompare(b.c));
+        });
+        return this;
     }
 
     /**
@@ -69,7 +86,7 @@ class Form8949
     /**
      * Generate totals to place at the bottom of the Part section (that is the total for the 14 rows on the page)
      * @param rows {Object[]} list of rows that go on a page
-     * @returns {*}
+     * @returns {Object}
      */
     getTotals (rows) {
         return rows.reduce((prev, curr) => {
@@ -82,21 +99,51 @@ class Form8949
     }
 
     /**
+     * Returns the total sales, costs, adjustments and gains for a requested checkbox data
+     * @param checkbox {'A'|'B'|'C'|'D'|'E'|'F'}
+     * @returns {Object}
+     */
+    getGlobalTotals(checkbox) {
+        return this.getTotals(this.taxDataByCheckbox[checkbox]);
+    }
+
+    /**
+     * Exports the loaded records in a CSV file
+     * @param filename {string|null} optional filename to set when the download is triggered.
+     */
+    exportToCsv(filename = null) {
+        const exportData = [];
+        Object.values(this.taxDataByCheckbox).forEach(checkboxArray => {
+            checkboxArray.forEach(({checkbox, a, b, c, d, e, f, g, h}) => {
+                const part = ['A', 'B', 'C'].includes(checkbox) ?
+                    'PartI' : (['D', 'E', 'F'].includes(checkbox) ? 'PartII' : 'unknown');
+                exportData.push({part, checkbox, a, b, c, d, e, f, g, h})
+            })
+        })
+
+        const defaultFileName = 'RevoScopeExport_' + this.year + '_'
+            + (moment().format('YYYY-MM-DD_HH-mm-ss')) + '.csv';
+
+        // generate the csv and trigger the download
+        exportCsvFile({
+            exportData,
+            filename: filename ?? defaultFileName,
+        });
+    }
+
+    /**
      * Generate the form pdf with the corresponding data for a given page
      * @param offset {int} offset to the first row to render (there are 14 rows per paf page)
-     * @param partICheckbox {string} which checkbox to use for the first part of the form
-     * @param partIICheckbox {string} which checkbox to use for the second part of the form
+     * @param checkbox {'A'|'B'|'C'|'D'|'E'|'F'} which part of the form to generate
      * @returns {Promise<PDFDocument>}
      */
-    async generateTaxFormPdfDoc({offset = 0, partICheckbox = 'C', partIICheckbox = 'F'}) {
+    async generateTaxFormPdfDoc({offset = 0, checkbox}) {
 
         // get the data to render on this page of the form
-        const partIRows = this.taxDataByCheckbox[partICheckbox]?.slice(offset, offset + 14) ?? [];
-        const partIIRows = this.taxDataByCheckbox[partIICheckbox]?.slice(offset, offset + 14) ?? [];
+        const rows = this.taxDataByCheckbox[checkbox]?.slice(offset, offset + 14) ?? [];
 
         // calculate totals to place at the bottom on each part
-        const partITotals = this.formatRowNumbers(this.getTotals(partIRows));
-        const partIITotals = this.formatRowNumbers(this.getTotals(partIIRows));
+        const pageTotals = this.formatRowNumbers(this.getTotals(rows));
 
         const columns = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
         const totals = ['d', 'e', 'f', 'g', 'h'];
@@ -111,14 +158,14 @@ class Form8949
         form.getTextField('topmostSubform[0].Page1[0].f1_2[0]').setText(this.ssn);
 
         // populate part I
-        if (partIRows.length) {
+        if (['A', 'B', 'C'].includes(checkbox)) {
             // populate the checkbox on the first page
-            (partICheckbox === 'A') && form.getCheckBox('topmostSubform[0].Page1[0].c1_1[0]').check();
-            (partICheckbox === 'B') && form.getCheckBox('topmostSubform[0].Page1[0].c1_1[1]').check();
-            (partICheckbox === 'C') && form.getCheckBox('topmostSubform[0].Page1[0].c1_1[2]').check();
+            (checkbox === 'A') && form.getCheckBox('topmostSubform[0].Page1[0].c1_1[0]').check();
+            (checkbox === 'B') && form.getCheckBox('topmostSubform[0].Page1[0].c1_1[1]').check();
+            (checkbox === 'C') && form.getCheckBox('topmostSubform[0].Page1[0].c1_1[2]').check();
 
             // populate the rows on the first page
-            partIRows.forEach((row, rowIndex) => {
+            rows.forEach((row, rowIndex) => {
                 const formattedRow = this.formatRowNumbers(row);
                 const rowReference = 3 + (8 * rowIndex);
                 const rowName = 'topmostSubform[0].Page1[0].Table_Line1[0].Row' + (rowIndex + 1);
@@ -133,11 +180,12 @@ class Form8949
             // populate the totals on the first page
             totals.forEach((key, keyIndex) => {
                 const cellNumber = 115 + keyIndex;
-                if (typeof partITotals[key] !== 'undefined') {
+                if (typeof pageTotals[key] !== 'undefined') {
                     form.getTextField('topmostSubform[0].Page1[0].f1_' + cellNumber + '[0]')
-                        .setText(partITotals[key]);
+                        .setText(pageTotals[key]);
                 }
             });
+            taxDoc.removePage(1);
         }
 
         // populate the name and ssn on the second page
@@ -145,14 +193,14 @@ class Form8949
         form.getTextField('topmostSubform[0].Page2[0].f2_2[0]').setText(this.ssn);
 
         // populate partII
-        if (partIIRows.length) {
+        if (['D', 'E', 'F'].includes(checkbox)) {
             // populate the checkbox on the second page
-            (partIICheckbox === 'D') && form.getCheckBox('topmostSubform[0].Page2[0].c2_1[0]').check();
-            (partIICheckbox === 'E') && form.getCheckBox('topmostSubform[0].Page2[0].c2_1[1]').check();
-            (partIICheckbox === 'F') && form.getCheckBox('topmostSubform[0].Page2[0].c2_1[2]').check();
+            (checkbox === 'D') && form.getCheckBox('topmostSubform[0].Page2[0].c2_1[0]').check();
+            (checkbox === 'E') && form.getCheckBox('topmostSubform[0].Page2[0].c2_1[1]').check();
+            (checkbox === 'F') && form.getCheckBox('topmostSubform[0].Page2[0].c2_1[2]').check();
 
             // populate the rows on the second page
-            partIIRows.forEach((row, rowIndex) => {
+            rows.forEach((row, rowIndex) => {
                 const formattedRow = this.formatRowNumbers(row);
                 const rowReference = 3 + (8 * rowIndex);
                 const rowName = 'topmostSubform[0].Page2[0].Table_Line1[0].Row' + (rowIndex + 1);
@@ -167,11 +215,12 @@ class Form8949
             // populate the totals on the second page
             totals.forEach((key, keyIndex) => {
                 const cellNumber = 115 + keyIndex;
-                if (typeof partIITotals[key] !== 'undefined') {
+                if (typeof pageTotals[key] !== 'undefined') {
                     form.getTextField('topmostSubform[0].Page2[0].f2_' + cellNumber + '[0]')
-                        .setText(partIITotals[key]);
+                        .setText(pageTotals[key]);
                 }
             });
+            taxDoc.removePage(0);
         }
 
         return taxDoc;
@@ -207,23 +256,25 @@ class Form8949
     /***
      * Generates a page of the pdf of Form 8949 and makes the browser download it
      * @param page {int} page number to generate
-     * @param part {'partI'|'partII'|'all'} which part of the form to generate
+     * @param checkbox {'A'|'B'|'C'|'D'|'E'|'F'} which part of the form to generate
      * @returns {Promise<void>}
      */
-    async downloadFormPdf ({page = 1, part = 'all'}) {
+    async downloadFormPdf ({page = 1, checkbox}) {
         const offset = (page - 1) * 14;
-        const taxDoc = await this.generateTaxFormPdfDoc({offset});
+        const taxDoc = await this.generateTaxFormPdfDoc({offset, checkbox});
         let partName = '';
-        if (part === 'I') {
-            taxDoc.removePage(1);
-            partName = 'partI_';
+        if (['A', 'B', 'C'].includes(checkbox)) {
+            partName = 'partI_' ;
         }
-        if (part === 'II') {
-            taxDoc.removePage(0);
+        if (['D', 'E', 'F'].includes(checkbox)) {
             partName = 'partII_';
         }
 
-        const filename = 'RevoForm8949_' + this.year + '_' + partName + page + '_' + (moment().format('YYYY-MM-DD_HH-mm-ss')) + '.pdf';
+        const filename = (
+            'RevoForm8949_' + this.year + '_'
+            + partName + '_' + checkbox + '_' + page + '_'
+            + (moment().format('YYYY-MM-DD_HH-mm-ss')) + '.pdf'
+        );
         await this.downloadPdf(taxDoc, filename);
     }
 }

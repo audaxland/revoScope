@@ -108,20 +108,23 @@ export const getAllSalesTotals = ({shortTerm = [], longTerm = [], exchangeRate =
  * the format generated is in part controlled by the form settings set on the "Form 8949" page
  * @param shortTerm {Sale[]} list of short term assets sales
  * @param longTerm {Sale[]} list of long term asset sales
+ * @param formSettings
  * @param rest {object} optional additional data needed to format the data (date format, exchange rate, ...)
  * @returns {{partII: Object[], partI: Object[]}}
  */
-export const formatTaxData = ({shortTerm, longTerm, ...rest}) => ({
+export const formatTaxData = ({shortTerm, longTerm, formSettings, ...rest}) => ({
     partI: formatTaxPart({
         data: shortTerm,
         part: 'Part I',
         checkbox: 'C',
+        ...formSettings,
         ...rest
     }),
     partII: formatTaxPart({
         data: longTerm,
         part: 'Part II',
         checkbox: 'F',
+        ...formSettings,
         ...rest
     }),
 })
@@ -144,7 +147,7 @@ export const formatTaxPart = ({
     checkbox = 'C',
     data,
     exchangeRate,
-    description,
+    descriptionFormat,
     datesFormat= DATE_FORMAT_MM_DD_YYYY,
     multiDatesFormat= MULTI_DATES_STATIC,
     multiDatesText = 'VARIOUS',
@@ -155,8 +158,8 @@ export const formatTaxPart = ({
     return data.map(row => ({
         part,
         checkbox,
-        // a: description
-        a: description.replace('#CURRENCY#', row.currency)
+        // a: descriptionFormat
+        a: descriptionFormat.replace('#CURRENCY#', row.currency)
             .replace('#AMOUNT#', cleanDecimalString(row.amount)),
         // b: acquired date
         b: formatMultiDateString(row.acquiredDates, datesFormat, {
@@ -177,6 +180,58 @@ export const formatTaxPart = ({
         // h: gain
         h: (row.gain / rate).toFixed(2),
     }));
+}
+
+/**
+ * Computes the list of records from the revolut statement to include in the generated form 8949 files
+ * @param accounts {Account[]} list of crytocurrency accounts, which contains the sales data
+ * @param taxYear {string|number} year selected for the form 8949 to generate
+ * @returns {{shortTerm: Object[], longTerm: Object[]}}
+ */
+export const computeLongTermShortTem = ({accounts, taxYear}) => {
+    /**
+     * @type {Object[]} sales of short term assets sold the selected year
+     */
+    const shortTerm = [];
+
+    /**
+     * @type {Object[]} sales of long term assets sold the selected year
+     */
+    const longTerm = [];
+
+    Object.values(accounts).forEach(account => {
+        account.listSales(false).forEach(sale => {
+            if ((sale.year === Number(taxYear)) && (sale.type === 'sale')) {
+                const saleItem = {
+                    currency: sale.currency,
+                    amount: sale.sold,
+                    acquiredDates: sale.purchaseDates,
+                    soldDate: sale.date,
+                    soldFor: sale.soldFor,
+                    soldCurrency: sale.localCurrency,
+                    totalCost: sale.totalCost,
+                    gain: sale.gain,
+                };
+
+                // if any of the purchase dates is less than one year, the sale is a short term transaction
+                const oneYearBeforeSale = new Date((new Date(sale.date)).setFullYear(sale.year - 1));
+                const isShortTerm = sale.purchaseDates.reduce((prev, curr) => {
+                    if (prev) return prev;
+                    return (new Date(curr)) > oneYearBeforeSale;
+                }, false);
+
+                if (isShortTerm) {
+                    shortTerm.push(saleItem);
+                } else {
+                    longTerm.push(saleItem);
+                }
+            }
+        });
+    });
+    shortTerm.sort((a, b) => a.soldDate > b.soldDate ? 1 : (a.soldDate < b.soldDate ? -1 : 0));
+    longTerm.sort((a, b) => a.soldDate > b.soldDate ? 1 : (a.soldDate < b.soldDate ? -1 : 0));
+
+    return {shortTerm, longTerm};
 }
 
 /**

@@ -1,28 +1,6 @@
-import Papa from 'papaparse';
 import md5 from "md5";
+import {readCsvString, readCsvUploadFile} from "./uploadHelper";
 
-/**
- * Reads a file uploaded via a <input type="file" /> element and returns the content of the file as a string (via a Promise)
- * @param file file resource
- * @returns {Promise<unknown>}
- */
-export const readFile = file => (
-    new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = e => resolve(e.target.result);
-        reader.onerror = reject;
-        reader.readAsText(file);
-    })
-);
-
-/**
- * Converts a csv file content string into an array of rows
- * @param fileString {string} content of a csv file
- * @returns {*}
- */
-export const readCsvString = fileString => {
-    return Papa.parse(fileString, {header: true, skipEmptyLines: false}).data.filter(row => Object.keys(row).length > 1);
-}
 
 /**
  * Extracts general statistics from a csv statement file data
@@ -62,40 +40,28 @@ const getFileStatistics = rows => {
 
 /**
  * Handles the upload of a statement csv file
- * @param newUpload {Object} file object from a <input type="file" /> element
+ * @param newUpload {File} file object from a <input type="file" /> element
  * @returns {Promise<{size, fileData: *, name, count, fileHash: *, lastModified, type}>}
  */
 export const readNewStatementFile = async newUpload => {
-    const {lastModified, name, size, type} = newUpload;
+    const {csvContent, fileHash, lastModified, name, size, type} = await readCsvUploadFile(newUpload);
 
-    if (newUpload.name.slice(-4).toLowerCase() !== '.csv') {
-        throw new Error('Invalid File: ' + newUpload.name + '. Only CSV files allowed.');
-    }
-    // convert the file uploaded to a string
-    const fileContent = await readFile(newUpload);
-
-    return await processNewStatementFile({fileContent, lastModified, name, size, type});
+    return await processNewStatementFile({csvContent, fileHash, lastModified, name, size, type});
 }
 
 /**
  * Reads a new csv file content and inserts the corresponding data in IndexDB
  * A file can be uploaded either via the <input type="file" /> element or directly from the app (for the demo files)
  * Processing is the same once we have the file content.
- * @param fileContent {string} text content of the file
+ * @param csvContent {Object[]} content of the csv file as array of objects
+ * @param fileHash {string} md5 hash of the original file
  * @param lastModified {number} number to keep as last modification of the file
  * @param name {string} name of the file
- * @param size {string} size of the file
+ * @param size {number} size of the file
  * @param type {string} here this should always be 'text/csv'
  * @returns {Promise<{size: number, fileData: Object[], name: string, count: number, fileHash: string, lastModified: number, type: string}>}
  */
-export const processNewStatementFile = async ({fileContent, lastModified, name, size, type}) => {
-    // converts the csv file content string into an array of objects
-    const csvContent = readCsvString(fileContent);
-
-    // if no rows where parsed, the file must not have been a csv file
-    if (!csvContent.length) {
-        throw new Error('Invalid File: ' + name + '. This does not seem to be a valid csv file');
-    }
+export const processNewStatementFile = async ({csvContent, fileHash, lastModified, name, size, type}) => {
 
     // generates general statistics about the data read
     const statistics = getFileStatistics(csvContent);
@@ -127,7 +93,7 @@ export const processNewStatementFile = async ({fileContent, lastModified, name, 
     });
 
     return {
-        fileHash: md5(fileContent),
+        fileHash,
         name,
         size,
         type,
@@ -152,6 +118,10 @@ export const readNewDemoStatementFile = async (path, name) => {
     // convert the file uploaded to a string
     const fileContent = await fetch(path).then(res => res.text());
     const size = fileContent.length;
+    const fileHash = md5(fileContent);
 
-    return await processNewStatementFile({fileContent, lastModified, type, size, name});
+    // converts the csv file content string into an array of objects
+    const csvContent = readCsvString(fileContent);
+
+    return await processNewStatementFile({csvContent, fileHash, lastModified, type, size, name});
 }

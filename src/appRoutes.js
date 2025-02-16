@@ -10,12 +10,12 @@ import {
 import OverviewPage from "./pages/overview/OverviewPage";
 import FilesPage from "./pages/files/FilesPage";
 import RecordsPage from "./pages/records/RecordsPage";
-import ExchangePairesPage from "./pages/exchangePairs/ExchangePairesPage";
+import ExchangePairsPage from "./pages/exchangePairs/ExchangePairsPage";
 import OrphanExchangesPage from "./pages/orphanExchanges/OrphanExchangesPage";
 import AccountsPage from "./pages/accounts/AccountsPage";
 import GainsPage from "./pages/gains/GainsPage";
 import TransactionsPage from "./pages/transactions/TransactionsPage";
-import Form8949Page from "./pages/Form8949Page";
+import Form8949Page from "./pages/form8948/Form8949Page";
 import SettingsPage from "./pages/SettingsPage";
 import BalancesPage from "./pages/balances/BalancesPage";
 import WithdrawalsPage from "./pages/withdrawals/WithdrawalsPage";
@@ -74,7 +74,7 @@ const appRoutes = [
         title: "Exchange Pairs",
         path: "exchanges-pairs",
         icon: <FontAwesomeIcon icon={faArrowsRotate} />,
-        page: <ExchangePairesPage />,
+        page: <ExchangePairsPage />,
         secondary: true,
     },
     {

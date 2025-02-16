@@ -5,7 +5,7 @@ import PairedExchangesGrid from "./PairedExchangesGrid";
  * @returns {JSX.Element}
  * @constructor
  */
-const ExchangePairesPage = () => {
+const ExchangePairsPage = () => {
 
     return (
         <div>
@@ -14,4 +14,4 @@ const ExchangePairesPage = () => {
     );
 }
 
-export default ExchangePairesPage;
+export default ExchangePairsPage;
