@@ -84,7 +84,7 @@ const Form8949Page = () => {
     /**
      * @type {[Object[], function]} sales data prepared for Form8949
      */
-    const [taxData, setTaxData] = useState(() => formatTaxData(salesData));
+    const [taxData, setTaxData] = useState(() => formatTaxData(salesData, taxYear));
 
     /**
      * @type {[string[], function]} list of errors to display on the page
@@ -107,8 +107,8 @@ const Form8949Page = () => {
             ...salesData,
             exchangeRate,
             formSettings,
-        }));
-    }, [salesData, exchangeRate, formSettings]);
+        }, taxYear));
+    }, [salesData, exchangeRate, formSettings, taxYear]);
 
     /**
      * @type {Form8949} instance of the Form8949 class, with the data included

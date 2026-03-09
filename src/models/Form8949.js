@@ -9,6 +9,7 @@ import f8949_2025 from '../assets/form8949/f8949_2025.pdf';
 import moment from "moment";
 import {formatNumberWithParenthesis} from "../lib/formatHelper";
 import {exportCsvFile} from "../lib/exportHelper";
+import {getFormConfig} from "../lib/form8949Config";
 
 /**
  * pdf files for each tax year, that is the original form that will be populated by the app
@@ -41,12 +42,27 @@ class Form8949
      */
     constructor({year, name, ssn}) {
         this.year = year;
-        this.taxDataByCheckbox = {A: [], B: [], C: [], D: [], E: [], F: []};
+        const {rowsPerPage, partOneCheckboxes, partTwoCheckboxes, pdfFields} = getFormConfig(year);
+        this.rowsPerPage = rowsPerPage;
+        this.partOneCheckboxes = partOneCheckboxes;
+        this.partTwoCheckboxes = partTwoCheckboxes;
+        this.pdfFields = pdfFields;
+        this.taxDataByCheckbox = [...partOneCheckboxes, ...partTwoCheckboxes]
+            .reduce((prev,curr) => ({...prev, [curr]: []}), []);
         this.name = name;
         this.ssn = ssn;
         if (!yearForms[year]) {
             throw new Error('No tax form available for year: ' + year);
         }
+    }
+
+    /**
+     * Returns the number of pages for a given checkbox
+     * @param checkbox
+     * @returns {number}
+     */
+    nbPages(checkbox) {
+        return Math.ceil(this.taxDataByCheckbox[checkbox].length / this.rowsPerPage);
     }
 
     /**
@@ -102,7 +118,7 @@ class Form8949
 
     /**
      * Returns the total sales, costs, adjustments and gains for a requested checkbox data
-     * @param checkbox {'A'|'B'|'C'|'D'|'E'|'F'}
+     * @param checkbox {'A'|'B'|'C'|'D'|'E'|'F'|'G'|'H'|'I'|'J'|'K'|'L'}
      * @returns {Object}
      */
     getGlobalTotals(checkbox) {
@@ -117,8 +133,8 @@ class Form8949
         const exportData = [];
         Object.values(this.taxDataByCheckbox).forEach(checkboxArray => {
             checkboxArray.forEach(({checkbox, a, b, c, d, e, f, g, h}) => {
-                const part = ['A', 'B', 'C'].includes(checkbox) ?
-                    'PartI' : (['D', 'E', 'F'].includes(checkbox) ? 'PartII' : 'unknown');
+                const part = this.partOneCheckboxes.includes(checkbox) ?
+                    'PartI' : (this.partTwoCheckboxes.includes(checkbox) ? 'PartII' : 'unknown');
                 exportData.push({part, checkbox, a, b, c, d, e, f, g, h})
             })
         })
@@ -136,13 +152,13 @@ class Form8949
     /**
      * Generate the form pdf with the corresponding data for a given page
      * @param offset {int} offset to the first row to render (there are 14 rows per paf page)
-     * @param checkbox {'A'|'B'|'C'|'D'|'E'|'F'} which part of the form to generate
+     * @param checkbox {'A'|'B'|'C'|'D'|'E'|'F'|'G'|'H'|'I'|'J'|'K'|'L'} which part of the form to generate
      * @returns {Promise<PDFDocument>}
      */
     async generateTaxFormPdfDoc({offset = 0, checkbox}) {
 
         // get the data to render on this page of the form
-        const rows = this.taxDataByCheckbox[checkbox]?.slice(offset, offset + 14) ?? [];
+        const rows = this.taxDataByCheckbox[checkbox]?.slice(offset, offset + this.rowsPerPage) ?? [];
 
         // calculate totals to place at the bottom on each part
         const pageTotals = this.formatRowNumbers(this.getTotals(rows));
@@ -156,24 +172,24 @@ class Form8949
         const form = taxDoc.getForm()
 
         // populate the checkbox on the first page
-        form.getTextField('topmostSubform[0].Page1[0].f1_1[0]').setText(this.name);
-        form.getTextField('topmostSubform[0].Page1[0].f1_2[0]').setText(this.ssn);
+        form.getTextField(this.pdfFields.p1Name).setText(this.name);
+        form.getTextField(this.pdfFields.p1Ssn).setText(this.ssn);
 
         // populate part I
-        if (['A', 'B', 'C'].includes(checkbox)) {
+        if (this.partOneCheckboxes.includes(checkbox)) {
             // populate the checkbox on the first page
-            (checkbox === 'A') && form.getCheckBox('topmostSubform[0].Page1[0].c1_1[0]').check();
-            (checkbox === 'B') && form.getCheckBox('topmostSubform[0].Page1[0].c1_1[1]').check();
-            (checkbox === 'C') && form.getCheckBox('topmostSubform[0].Page1[0].c1_1[2]').check();
+            const checkboxIndex = this.partOneCheckboxes.indexOf(checkbox);
+            form.getCheckBox(this.pdfFields.p1CheckboxBase + '[' + checkboxIndex + ']').check();
 
             // populate the rows on the first page
             rows.forEach((row, rowIndex) => {
                 const formattedRow = this.formatRowNumbers(row);
                 const rowReference = 3 + (8 * rowIndex);
-                const rowName = 'topmostSubform[0].Page1[0].Table_Line1[0].Row' + (rowIndex + 1);
+                const rowName = this.pdfFields.p1RowBase + (rowIndex + 1) + '[0].f1_';
                 columns.forEach((key, keyIndex) => {
                     if (typeof formattedRow[key] !== 'undefined') {
-                        const cellName = rowName +'[0].f1_' + (rowReference + keyIndex) + '[0]';
+                        const fieldIndex = (rowReference + keyIndex).toString().padStart(this.pdfFields.padSize, 0);
+                        const cellName = rowName + fieldIndex + '[0]';
                         form.getTextField(cellName).setText(formattedRow[key]);
                     }
                 });
@@ -181,9 +197,9 @@ class Form8949
 
             // populate the totals on the first page
             totals.forEach((key, keyIndex) => {
-                const cellNumber = 115 + keyIndex;
+                const cellNumber = this.pdfFields.totalsOffset + keyIndex;
                 if (typeof pageTotals[key] !== 'undefined') {
-                    form.getTextField('topmostSubform[0].Page1[0].f1_' + cellNumber + '[0]')
+                    form.getTextField(this.pdfFields.p1TotalsBase + cellNumber + '[0]')
                         .setText(pageTotals[key]);
                 }
             });
@@ -191,24 +207,24 @@ class Form8949
         }
 
         // populate the name and ssn on the second page
-        form.getTextField('topmostSubform[0].Page2[0].f2_1[0]').setText(this.name);
-        form.getTextField('topmostSubform[0].Page2[0].f2_2[0]').setText(this.ssn);
+        form.getTextField(this.pdfFields.p2Name).setText(this.name);
+        form.getTextField(this.pdfFields.p2Ssn).setText(this.ssn);
 
         // populate partII
-        if (['D', 'E', 'F'].includes(checkbox)) {
+        if (this.partTwoCheckboxes.includes(checkbox)) {
             // populate the checkbox on the second page
-            (checkbox === 'D') && form.getCheckBox('topmostSubform[0].Page2[0].c2_1[0]').check();
-            (checkbox === 'E') && form.getCheckBox('topmostSubform[0].Page2[0].c2_1[1]').check();
-            (checkbox === 'F') && form.getCheckBox('topmostSubform[0].Page2[0].c2_1[2]').check();
+            const checkboxIndex = this.partTwoCheckboxes.indexOf(checkbox);
+            form.getCheckBox(this.pdfFields.p2CheckboxBase + '[' + checkboxIndex + ']').check();
 
             // populate the rows on the second page
             rows.forEach((row, rowIndex) => {
                 const formattedRow = this.formatRowNumbers(row);
                 const rowReference = 3 + (8 * rowIndex);
-                const rowName = 'topmostSubform[0].Page2[0].Table_Line1[0].Row' + (rowIndex + 1);
+                const rowName = this.pdfFields.p2RowBase + (rowIndex + 1) + '[0].f2_';
                 columns.forEach((key, keyIndex) => {
                     if (typeof formattedRow[key] !== 'undefined') {
-                        const cellName = rowName +'[0].f2_' + (rowReference + keyIndex) + '[0]';
+                        const fieldIndex = (rowReference + keyIndex).toString().padStart(this.pdfFields.padSize, 0);
+                        const cellName = rowName + fieldIndex + '[0]';
                         form.getTextField(cellName).setText(formattedRow[key]);
                     }
                 });
@@ -216,9 +232,9 @@ class Form8949
 
             // populate the totals on the second page
             totals.forEach((key, keyIndex) => {
-                const cellNumber = 115 + keyIndex;
+                const cellNumber = this.pdfFields.totalsOffset + keyIndex;
                 if (typeof pageTotals[key] !== 'undefined') {
-                    form.getTextField('topmostSubform[0].Page2[0].f2_' + cellNumber + '[0]')
+                    form.getTextField(this.pdfFields.p2TotalsBase + cellNumber + '[0]')
                         .setText(pageTotals[key]);
                 }
             });
@@ -258,17 +274,17 @@ class Form8949
     /***
      * Generates a page of the pdf of Form 8949 and makes the browser download it
      * @param page {int} page number to generate
-     * @param checkbox {'A'|'B'|'C'|'D'|'E'|'F'} which part of the form to generate
+     * @param checkbox {'A'|'B'|'C'|'D'|'E'|'F'|'G'|'H'|'I'|'J'|'K'|'L'} which part of the form to generate
      * @returns {Promise<void>}
      */
     async downloadFormPdf ({page = 1, checkbox}) {
-        const offset = (page - 1) * 14;
+        const offset = (page - 1) * this.rowsPerPage;
         const taxDoc = await this.generateTaxFormPdfDoc({offset, checkbox});
         let partName = '';
-        if (['A', 'B', 'C'].includes(checkbox)) {
+        if (this.partOneCheckboxes.includes(checkbox)) {
             partName = 'partI_' ;
         }
-        if (['D', 'E', 'F'].includes(checkbox)) {
+        if (this.partTwoCheckboxes.includes(checkbox)) {
             partName = 'partII_';
         }
 

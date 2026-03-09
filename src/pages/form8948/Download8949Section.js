@@ -8,7 +8,7 @@ import TwoDimensionTable from "../../elements/tables/TwoDimensionTable";
 /**
  * Renders a list of buttons to download the form 8949 pdf files for a given checkbox
  * @param part {string} either PartI or PartII of form 8949
- * @param checkbox {'A'|'B'|'C'|'D'|'E'|'F'} which checkbox will be selected on the form
+ * @param checkbox {'A'|'B'|'C'|'D'|'E'|'F'|'G'|'H'|'I'|'J'|'K'|'L'} which checkbox will be selected on the form
  * @param form {Form8949} instance of the Form8949 that contains the data and the download methods
  * @param setErrors {function} state setter to send the errors back to the parent component
  * @returns {JSX.Element|null}
@@ -16,7 +16,7 @@ import TwoDimensionTable from "../../elements/tables/TwoDimensionTable";
  */
 const DownloadCheckboxSection = ({part, checkbox, form, setErrors}) => {
     const nbPages = useMemo(() => (
-        Math.ceil(form.taxDataByCheckbox[checkbox].length / 14)
+        form.nbPages(checkbox)
     ), [form, checkbox])
 
     if (nbPages === 0) return null;
@@ -24,7 +24,7 @@ const DownloadCheckboxSection = ({part, checkbox, form, setErrors}) => {
     /**
      * Generate a pdf page of Form8949 and make it download it
      * @param page {number} page number to generate
-     * @param checkbox {'A'|'B'|'C'|'D'|'E'|'F'} which part of the form to generate
+     * @param checkbox {'A'|'B'|'C'|'D'|'E'|'F'|'G'|'H'|'I'|'J'|'K'|'L'} which part of the form to generate
      * @returns {(function(): Promise<void>)|*}
      */
     const handleForm = ({page = 1, checkbox}) => async () => {
@@ -73,8 +73,9 @@ const Download8949Section = ({taxYear, form}) => {
      * @type {{}} contains the totals data for each checkbox that will be rendered in the totals table.
      */
     const totalsData = useMemo(() => {
-        return ['A', 'B', 'C', 'D', 'E', 'F'].reduce((prev, checkbox) => {
-            const part = ['A', 'B', 'C'].includes(checkbox) ?  'PartI - Short Term' : 'PartII - Long Term';
+        const allCheckboxes = [...form.partOneCheckboxes, ...form.partTwoCheckboxes];
+        return allCheckboxes.reduce((prev, checkbox) => {
+            const part = form.partOneCheckboxes.includes(checkbox) ?  'PartI - Short Term' : 'PartII - Long Term';
             const {d, e, g, h} = form.getGlobalTotals(checkbox)
             prev[`${part} - Checkbox ${checkbox}`] = {
                 'Records Count': form.taxDataByCheckbox[checkbox].length,
@@ -105,14 +106,14 @@ const Download8949Section = ({taxYear, form}) => {
                 >Export Form 8949 Data as CSV File</Button>
             </FlexWrapSection>
             <FlexWrapSection title='Form 8949 PDF - Part I/Short Term Pages'>
-                {['A', 'B', 'C'].map(checkbox => (
-                    <DownloadCheckboxSection part='PartI' key={checkbox} {...{checkbox, form, setErrors}} />
+                {form.partOneCheckboxes.map(checkbox => (
+                    <DownloadCheckboxSection part='PartI' key={checkbox} {...{taxYear, checkbox, form, setErrors}} />
                 ))}
             </FlexWrapSection>
 
             <FlexWrapSection title='Form 8949 PDF - Part II/Long Term Pages'>
-                {['D', 'E', 'F'].map(checkbox => (
-                    <DownloadCheckboxSection part='PartII' key={checkbox} {...{checkbox, form, setErrors}} />
+                {form.partTwoCheckboxes.map(checkbox => (
+                    <DownloadCheckboxSection part='PartII' key={checkbox} {...{taxYear, checkbox, form, setErrors}} />
                 ))}
             </FlexWrapSection>
         </TitledBox>

@@ -7,6 +7,7 @@ import {
 } from "./formatHelper";
 import {exportCsvFile} from "./exportHelper";
 import moment from "moment";
+import {getDefaultPartICheckbox, getDefaultPartIICheckbox} from "./form8949Config";
 
 /**
  * currency conversion rates per year used as default exchange rate between the local/base currency and usd for generating the Form8949
@@ -110,20 +111,21 @@ export const getAllSalesTotals = ({shortTerm = [], longTerm = [], exchangeRate =
  * @param longTerm {Sale[]} list of long term asset sales
  * @param formSettings
  * @param rest {object} optional additional data needed to format the data (date format, exchange rate, ...)
+ * @param taxYear {int} the year for which the tax is being calculated (the checkbox applicable changed in 2025)
  * @returns {{partII: Object[], partI: Object[]}}
  */
-export const formatTaxData = ({shortTerm, longTerm, formSettings, ...rest}) => ({
+export const formatTaxData = ({shortTerm, longTerm, formSettings, ...rest}, taxYear) => ({
     partI: formatTaxPart({
         data: shortTerm,
         part: 'Part I',
-        checkbox: 'C',
+        checkbox: getDefaultPartICheckbox(taxYear),
         ...formSettings,
         ...rest
     }),
     partII: formatTaxPart({
         data: longTerm,
         part: 'Part II',
-        checkbox: 'F',
+        checkbox: getDefaultPartIICheckbox(taxYear),
         ...formSettings,
         ...rest
     }),
